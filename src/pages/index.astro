@@ -1,37 +1,65 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Card from "../components/Card.astro";
 import Sidebar from "../components/Sidebar.astro";
 ---
 
 <script>
+  import type Command from "../lib/Command";
+
+  const renderWorker = new Worker(new URL("/scripts/renderWorker.ts", import.meta.url), {
+    type: "module",
+    name: "conwayRenderer"
+  });
+
   const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
-  const cellWidth = 16;
-  const cellHeight = 16;
+  const offscreen = canvas.transferControlToOffscreen();
 
-  const liveCells: Map<number, Set<number>> = new Map();
+  renderWorker.postMessage({
+    type: "setRenderTarget",
+    target: offscreen
+  } satisfies Command, [offscreen]);
 
-  const ctx = canvas.getContext("2d");
+  renderWorker.postMessage({
+    type: "changeResolution",
+    width: canvas.clientWidth,
+    height: canvas.clientHeight
+  } satisfies Command);
 
-  const millisecond = 1000;
-  const updateRate = 0.5;
+  renderWorker.postMessage({
+    type: "changeCellSize",
+    width: 16,
+    height: 16
+  } satisfies Command);
 
-  let previousUpdate = 0;
+  renderWorker.postMessage({
+    type: "changeCellColor",
+    color: "#ff0082"
+  } satisfies Command);
 
   let mouseCoords: [number, number] | null = null;
 
   let mouseDown = false;
 
-  let previousCell: [number, number] | null = null
+  let previousCell: [number, number] | null = null;
 
   canvas.onmouseup = () => {
     mouseDown = false;
     previousCell = null;
   };
 
-  canvas.onmousedown = () => {
+  canvas.onmousedown = (event) => {
     mouseDown = true;
+    mouseCoords = [event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop];
+    const [x, y] = mouseCoords;
+    const mouseXCell = Math.floor(x / 16);
+    const mouseYCell = Math.floor(y / 16);
+    previousCell = [mouseXCell, mouseYCell]
+    renderWorker.postMessage({
+      type: "toggleCell",
+      x: mouseXCell,
+      y: mouseYCell
+    } satisfies Command);
   };
 
   canvas.onmouseleave = () => {
@@ -40,195 +68,29 @@ import Sidebar from "../components/Sidebar.astro";
 
   canvas.onmousemove = (event) => {
     mouseCoords = [event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop];
+    const [x, y] = mouseCoords;
 
-    const mouseXCell = Math.floor((event.clientX - canvas.offsetLeft) / cellWidth);
-    const mouseYCell = Math.floor((event.clientY - canvas.offsetTop) / cellHeight);
+    const mouseXCell = Math.floor(x / 16);
+    const mouseYCell = Math.floor(y / 16);
 
     if (!(previousCell && mouseXCell === previousCell[0] && mouseYCell === previousCell[1]) && mouseDown) {
-      if (liveCells.has(mouseXCell)) {
-        const row = liveCells.get(mouseXCell);
-        if (row.has(mouseYCell)) {
-          row.delete(mouseYCell);
-          if (row.size === 0) {
-            liveCells.delete(mouseXCell);
-          }
-        } else {
-          row.add(mouseYCell);
-        }
-      } else {
-        liveCells.set(mouseXCell, new Set());
-        liveCells.get(mouseXCell).add(mouseYCell);
-      }
+      renderWorker.postMessage({
+        type: "toggleCell",
+        x: mouseXCell,
+        y: mouseYCell
+      } satisfies Command);
 
-      previousCell = [mouseXCell, mouseYCell]
+      previousCell = [mouseXCell, mouseYCell];
     }
   };
 
-  function simulate(deltaTime: number) {
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
-
-
-    const columnCount = Math.ceil(canvas.clientHeight / cellHeight);
-    const rowCount = Math.ceil(canvas.clientWidth / cellWidth);
-
-    if (mouseCoords) {
-      const [x, y] = mouseCoords;
-      const mouseXCell = Math.floor(x / cellWidth);
-      const mouseYCell = Math.floor(y / cellWidth);
-
-      ctx.fillStyle = "#410826";
-      ctx.fillRect(mouseXCell * cellWidth, mouseYCell * cellHeight, cellWidth, cellHeight);
-    }
-
-    if (deltaTime < (updateRate * millisecond) + previousUpdate) {
-      ctx.fillStyle = "#FF0082";
-      for (const [row, cells] of liveCells) {
-        for (const cell of cells) {
-          ctx.fillRect(row * cellWidth, cell * cellHeight, cellWidth, cellHeight);
-        }
-      }
-      window.requestAnimationFrame(simulate);
-      return;
-    }
-
-    previousUpdate = deltaTime;
-
-    const cellsToKill: Array<[number, number]> = [];
-
-    const emptyCellsToCheck: Array<[number, number]> = [];
-
-    const cellsToAdd: Array<[number, number]> = [];
-
-    const emptyRows: Set<number> = new Set();
-
-    for (let [row, cells] of liveCells) {
-      for (let cell of cells) {
-        let liveNeighbors = 0;
-        const topRow = row === 0 ? rowCount - 1 : row - 1;
-        const bottomRow = row === (rowCount - 1) ? 0 : row + 1;
-        const leftColumn = cell === 0 ? columnCount - 1 : cell - 1;
-        const rightColumn = cell === (columnCount - 1) ? 0 : cell + 1;
-
-        if (liveCells.has(topRow)) {
-          const topCells = liveCells.get(topRow);
-          if (topCells.has(cell)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([topRow, cell]);
-          }
-          if (topCells.has(leftColumn)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([topRow, leftColumn]);
-          }
-
-          if (topCells.has(rightColumn)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([topRow, rightColumn]);
-          }
-        } else {
-          emptyCellsToCheck.push([topRow, leftColumn], [topRow, rightColumn], [topRow, cell]);
-        }
-        if (liveCells.has(bottomRow)) {
-          const bottomCells = liveCells.get(bottomRow);
-          if (bottomCells.has(cell)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([bottomRow, cell]);
-          }
-          if (bottomCells.has(leftColumn)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([bottomRow, leftColumn]);
-          }
-
-          if (bottomCells.has(rightColumn)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([bottomRow, rightColumn]);
-          }
-        } else {
-          emptyCellsToCheck.push([bottomRow, leftColumn], [bottomRow, rightColumn], [bottomRow, cell]);
-        }
-
-        if (cells.has(leftColumn)) {
-          liveNeighbors++;
-        } else {
-          emptyCellsToCheck.push([row, leftColumn]);
-        }
-        if (cells.has(rightColumn)) {
-          liveNeighbors++;
-        } else {
-          emptyCellsToCheck.push([row, rightColumn]);
-        }
-
-        if (liveNeighbors < 2 || liveNeighbors > 3) {
-          cellsToKill.push([row, cell]);
-        }
-      }
-    }
-
-
-    for (const [row, column] of emptyCellsToCheck) {
-      let liveNeighbors = 0;
-      const topRow = row === 0 ? rowCount - 1 : row - 1;
-      const bottomRow = row === (rowCount - 1) ? 0 : row + 1;
-      const leftColumn = column === 0 ? columnCount - 1 : column - 1;
-      const rightColumn = column === (columnCount - 1) ? 0 : column + 1;
-
-      if (liveCells.has(topRow)) {
-        const topCells = liveCells.get(topRow);
-        liveNeighbors += topCells.has(column) ? 1 : 0;
-        liveNeighbors += topCells.has(leftColumn) ? 1 : 0;
-        liveNeighbors += topCells.has(rightColumn) ? 1 : 0;
-      }
-      if (liveCells.has(bottomRow)) {
-        const bottomCells = liveCells.get(bottomRow);
-        liveNeighbors += bottomCells.has(column) ? 1 : 0;
-        liveNeighbors += bottomCells.has(leftColumn) ? 1 : 0;
-        liveNeighbors += bottomCells.has(rightColumn) ? 1 : 0;
-      }
-
-      if (liveCells.has(row)) {
-        const cells = liveCells.get(row);
-        liveNeighbors += cells.has(leftColumn) ? 1 : 0;
-        liveNeighbors += cells.has(rightColumn) ? 1 : 0;
-      }
-
-
-      if (liveNeighbors === 3) {
-        cellsToAdd.push([row, column]);
-      }
-    }
-
-    for (const [row, column] of cellsToAdd) {
-      if (liveCells.has(row)) {
-        liveCells.get(row).add(column);
-      } else {
-        liveCells.set(row, new Set());
-        liveCells.get(row).add(column);
-      }
-    }
-
-
-    for (const [row, column] of cellsToKill) {
-      const cells = liveCells.get(row);
-      cells.delete(column);
-      if (cells.size === 0) {
-        emptyRows.add(row);
-      }
-    }
-
-    for (const row of emptyRows) {
-      liveCells.delete(row);
-    }
-
-    window.requestAnimationFrame(simulate);
-  }
-
-  window.requestAnimationFrame(simulate);
+  window.addEventListener("resize", (event) => {
+    renderWorker.postMessage({
+      type: "changeResolution",
+      width: canvas.clientWidth,
+      height: canvas.clientHeight
+    } satisfies Command);
+  });
 </script>
 
 <Layout title="Welcome to Astro.">
