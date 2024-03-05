@@ -1,0 +1,348 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card.astro";
+import Sidebar from "../components/Sidebar.astro";
+---
+
+<script>
+  const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+
+  const cellWidth = 16;
+  const cellHeight = 16;
+
+  const liveCells: Map<number, Set<number>> = new Map();
+
+  const ctx = canvas.getContext("2d");
+
+  const millisecond = 1000;
+  const updateRate = 0.5;
+
+  let previousUpdate = 0;
+
+  let mouseCoords: [number, number] | null = null;
+
+  let mouseDown = false;
+
+  let previousCell: [number, number] | null = null
+
+  canvas.onmouseup = () => {
+    mouseDown = false;
+    previousCell = null;
+  };
+
+  canvas.onmousedown = () => {
+    mouseDown = true;
+  };
+
+  canvas.onmouseleave = () => {
+    mouseCoords = null;
+  };
+
+  canvas.onmousemove = (event) => {
+    mouseCoords = [event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop];
+
+    const mouseXCell = Math.floor((event.clientX - canvas.offsetLeft) / cellWidth);
+    const mouseYCell = Math.floor((event.clientY - canvas.offsetTop) / cellHeight);
+
+    if (!(previousCell && mouseXCell === previousCell[0] && mouseYCell === previousCell[1]) && mouseDown) {
+      if (liveCells.has(mouseXCell)) {
+        const row = liveCells.get(mouseXCell);
+        if (row.has(mouseYCell)) {
+          row.delete(mouseYCell);
+          if (row.size === 0) {
+            liveCells.delete(mouseXCell);
+          }
+        } else {
+          row.add(mouseYCell);
+        }
+      } else {
+        liveCells.set(mouseXCell, new Set());
+        liveCells.get(mouseXCell).add(mouseYCell);
+      }
+
+      previousCell = [mouseXCell, mouseYCell]
+    }
+  };
+
+  function simulate(deltaTime: number) {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+
+
+    const columnCount = Math.ceil(canvas.clientHeight / cellHeight);
+    const rowCount = Math.ceil(canvas.clientWidth / cellWidth);
+
+    if (mouseCoords) {
+      const [x, y] = mouseCoords;
+      const mouseXCell = Math.floor(x / cellWidth);
+      const mouseYCell = Math.floor(y / cellWidth);
+
+      ctx.fillStyle = "#410826";
+      ctx.fillRect(mouseXCell * cellWidth, mouseYCell * cellHeight, cellWidth, cellHeight);
+    }
+
+    if (deltaTime < (updateRate * millisecond) + previousUpdate) {
+      ctx.fillStyle = "#FF0082";
+      for (const [row, cells] of liveCells) {
+        for (const cell of cells) {
+          ctx.fillRect(row * cellWidth, cell * cellHeight, cellWidth, cellHeight);
+        }
+      }
+      window.requestAnimationFrame(simulate);
+      return;
+    }
+
+    previousUpdate = deltaTime;
+
+    const cellsToKill: Array<[number, number]> = [];
+
+    const emptyCellsToCheck: Array<[number, number]> = [];
+
+    const cellsToAdd: Array<[number, number]> = [];
+
+    const emptyRows: Set<number> = new Set();
+
+    for (let [row, cells] of liveCells) {
+      for (let cell of cells) {
+        let liveNeighbors = 0;
+        const topRow = row === 0 ? rowCount - 1 : row - 1;
+        const bottomRow = row === (rowCount - 1) ? 0 : row + 1;
+        const leftColumn = cell === 0 ? columnCount - 1 : cell - 1;
+        const rightColumn = cell === (columnCount - 1) ? 0 : cell + 1;
+
+        if (liveCells.has(topRow)) {
+          const topCells = liveCells.get(topRow);
+          if (topCells.has(cell)) {
+            liveNeighbors++;
+          } else {
+            emptyCellsToCheck.push([topRow, cell]);
+          }
+          if (topCells.has(leftColumn)) {
+            liveNeighbors++;
+          } else {
+            emptyCellsToCheck.push([topRow, leftColumn]);
+          }
+
+          if (topCells.has(rightColumn)) {
+            liveNeighbors++;
+          } else {
+            emptyCellsToCheck.push([topRow, rightColumn]);
+          }
+        } else {
+          emptyCellsToCheck.push([topRow, leftColumn], [topRow, rightColumn], [topRow, cell]);
+        }
+        if (liveCells.has(bottomRow)) {
+          const bottomCells = liveCells.get(bottomRow);
+          if (bottomCells.has(cell)) {
+            liveNeighbors++;
+          } else {
+            emptyCellsToCheck.push([bottomRow, cell]);
+          }
+          if (bottomCells.has(leftColumn)) {
+            liveNeighbors++;
+          } else {
+            emptyCellsToCheck.push([bottomRow, leftColumn]);
+          }
+
+          if (bottomCells.has(rightColumn)) {
+            liveNeighbors++;
+          } else {
+            emptyCellsToCheck.push([bottomRow, rightColumn]);
+          }
+        } else {
+          emptyCellsToCheck.push([bottomRow, leftColumn], [bottomRow, rightColumn], [bottomRow, cell]);
+        }
+
+        if (cells.has(leftColumn)) {
+          liveNeighbors++;
+        } else {
+          emptyCellsToCheck.push([row, leftColumn]);
+        }
+        if (cells.has(rightColumn)) {
+          liveNeighbors++;
+        } else {
+          emptyCellsToCheck.push([row, rightColumn]);
+        }
+
+        if (liveNeighbors < 2 || liveNeighbors > 3) {
+          cellsToKill.push([row, cell]);
+        }
+      }
+    }
+
+
+    for (const [row, column] of emptyCellsToCheck) {
+      let liveNeighbors = 0;
+      const topRow = row === 0 ? rowCount - 1 : row - 1;
+      const bottomRow = row === (rowCount - 1) ? 0 : row + 1;
+      const leftColumn = column === 0 ? columnCount - 1 : column - 1;
+      const rightColumn = column === (columnCount - 1) ? 0 : column + 1;
+
+      if (liveCells.has(topRow)) {
+        const topCells = liveCells.get(topRow);
+        liveNeighbors += topCells.has(column) ? 1 : 0;
+        liveNeighbors += topCells.has(leftColumn) ? 1 : 0;
+        liveNeighbors += topCells.has(rightColumn) ? 1 : 0;
+      }
+      if (liveCells.has(bottomRow)) {
+        const bottomCells = liveCells.get(bottomRow);
+        liveNeighbors += bottomCells.has(column) ? 1 : 0;
+        liveNeighbors += bottomCells.has(leftColumn) ? 1 : 0;
+        liveNeighbors += bottomCells.has(rightColumn) ? 1 : 0;
+      }
+
+      if (liveCells.has(row)) {
+        const cells = liveCells.get(row);
+        liveNeighbors += cells.has(leftColumn) ? 1 : 0;
+        liveNeighbors += cells.has(rightColumn) ? 1 : 0;
+      }
+
+
+      if (liveNeighbors === 3) {
+        cellsToAdd.push([row, column]);
+      }
+    }
+
+    for (const [row, column] of cellsToAdd) {
+      if (liveCells.has(row)) {
+        liveCells.get(row).add(column);
+      } else {
+        liveCells.set(row, new Set());
+        liveCells.get(row).add(column);
+      }
+    }
+
+
+    for (const [row, column] of cellsToKill) {
+      const cells = liveCells.get(row);
+      cells.delete(column);
+      if (cells.size === 0) {
+        emptyRows.add(row);
+      }
+    }
+
+    for (const row of emptyRows) {
+      liveCells.delete(row);
+    }
+
+    window.requestAnimationFrame(simulate);
+  }
+
+  window.requestAnimationFrame(simulate);
+</script>
+
+<Layout title="Welcome to Astro.">
+  <main>
+    <div
+      class="h-screen flex flex-col">
+      <div
+        class="bg-magenta-800 h-20 lg:h-20 flex-none text-xl uppercase text-magenta-400 font-bold border-b-16 border-magenta-700">
+        <div class="mx-auto max-w-screen-2xl flex justify-between h-full" x-data="{openSidebar: false}">
+          <div class="p-4 w-16 flex lg:hidden  hover:bg-white/5 cursor-pointer" @click="openSidebar = !openSidebar">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="fill-magenta-400"
+                 viewBox="0 0 48 48">
+              <rect class="top"
+                    x="0" y="0"
+                    width="100%" height="8" />
+              <rect class="middle"
+                    x="0" y="20"
+                    width="100%" height="8" />
+              <rect class="bottom"
+                    x="0" y="40"
+                    width="100%" height="8" />
+            </svg>
+          </div>
+
+          <Sidebar open="openSidebar">
+            <div class="cursor-pointer hover:bg-white/5 p-8 flex items-center transition-colors">
+              Home
+            </div>
+            <div class="cursor-pointer hover:bg-white/5 p-8  flex items-center transition-colors">
+              About me
+            </div>
+            <div class="cursor-pointer hover:bg-white/5 p-8 flex items-center transition-colors">
+              Projects
+            </div>
+            <div class="cursor-pointer hover:bg-white/5 p-8 flex items-center transition-colors">
+              GitHub ↗
+            </div>
+            <div class="cursor-pointer hover:bg-white/5 p-8 flex items-center transition-colors">
+              LinkedIn ↗
+            </div>
+          </Sidebar>
+
+          <div class="items-stretch hidden lg:flex select-none">
+            <div class="cursor-pointer hover:bg-white/5 px-8 flex items-center transition-colors">
+              Home
+            </div>
+            <div class="cursor-pointer hover:bg-white/5 px-8  flex items-center transition-colors">
+              About me
+            </div>
+            <div class="cursor-pointer hover:bg-white/5 px-8 flex items-center transition-colors">
+              Projects
+            </div>
+            <div class="cursor-pointer hover:bg-white/5 px-8 flex items-center transition-colors">
+              GitHub ↗
+            </div>
+            <div class="cursor-pointer hover:bg-white/5 px-8 flex items-center transition-colors">
+              LinkedIn ↗
+            </div>
+          </div>
+
+          <div class="h-full flex">
+            <svg viewBox="0 0 1 1" class="h-full ">
+              <path xmlns="http://www.w3.org/2000/svg" class="fill-magenta-500"
+                    d="M0,0L1,1L0,1L0,0Z" />
+            </svg>
+            <svg viewBox="0 0 1 1" class="h-full">
+              <path xmlns="http://www.w3.org/2000/svg" class="fill-magenta-700"
+                    d="M0,0L1,1L0,1L0,0Z" />
+            </svg>
+            <svg viewBox="0 0 1 1" class="h-full">
+              <path xmlns="http://www.w3.org/2000/svg" class="fill-magenta-700"
+                    d="M0,0L1,1L0,1L0,0Z" />
+            </svg>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="flex-1 overflow-hidden">
+        <canvas id="canvas" class="h-full w-full">
+        </canvas>
+      </div>
+
+
+      <div
+        class="flex-none bg-magenta-800 h-fit 2xl:h-56 border-t-16 border-magenta-700 text-magenta-400 uppercase justify-between">
+        <div class="max-w-screen-2xl flex justify-between mx-auto h-full gap-8">
+          <div class="flex flex-col justify-center select-none p-4">
+            <h1
+              class="text-[64px] sm:text-[72px] md:text-[80px] lg:text-[88px] xl:text-[96px] 2xl:text-[108px]  font-black leading-[1.2] mb-[-2%]">
+              Hiram Muñoz
+            </h1>
+            <p class="text-[26px] sm:text-[28px] md:text-[30px] lg:text-[32px] xl:text-[34px] 2xl:text-[36px]">
+              <span class="italic font-medium">AKA</span> Stock44
+            </p>
+          </div>
+          <div class="h-full hidden xl:flex">
+            <svg viewBox="0 0 1 1" class="h-full">
+              <path xmlns="http://www.w3.org/2000/svg" class="fill-magenta-500"
+                    d="M0,0L0,1L1,0L0,0Z" />
+            </svg>
+            <svg viewBox="0 0 1 1" class="h-full">
+              <path xmlns="http://www.w3.org/2000/svg" class="fill-magenta-700"
+                    d="M0,0L0,1L1,0L0,0Z" />
+            </svg>
+            <svg viewBox="0 0 1 1" class="h-full">
+              <path xmlns="http://www.w3.org/2000/svg" class="fill-magenta-700"
+                    d="M0,0L0,1L1,0L0,0Z" />
+            </svg>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</Layout>
