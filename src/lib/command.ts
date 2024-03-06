@@ -1,3 +1,5 @@
+import { type Cell } from "./cells.ts";
+
 interface SetRenderTarget {
   type: "setRenderTarget";
   target: OffscreenCanvas;
@@ -5,8 +7,7 @@ interface SetRenderTarget {
 
 interface SetHoverPosition {
   type: "setHoverPosition";
-  x: number;
-  y: number;
+  position: Cell | null;
 }
 
 interface ChangeResolution {

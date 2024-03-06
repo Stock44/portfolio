@@ -6,6 +6,7 @@ import {
   toggleCells,
   updateSize,
 } from "../../src/lib/conwayGame.ts";
+import { type Cell } from "../../src/lib/cells.ts";
 
 // global variables
 let canvas: OffscreenCanvas | null = null;
@@ -16,6 +17,7 @@ let columns = 0;
 let rows = 0;
 let pause = false;
 let updateRate = 1000;
+let hoverPosition: Cell | null = null;
 
 // game instance
 let game = makeGameOfLife();
@@ -57,7 +59,7 @@ addEventListener("message", (event: MessageEvent<Command>) => {
       canvas = command.target;
       break;
     case "setHoverPosition":
-      // TODO
+      hoverPosition = command.position;
       break;
     case "togglePause":
       pause = !pause;
@@ -100,6 +102,12 @@ function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawLiveCells(ctx, game, cellWidth, cellHeight, cellColor);
+
+  if (hoverPosition) {
+    const [x, y] = hoverPosition;
+    ctx.fillStyle = "#ffffff18";
+    ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
+  }
 
   requestAnimationFrame(render);
 }

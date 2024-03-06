@@ -84,6 +84,11 @@ document.addEventListener("alpine:init", () => {
         event.clientY,
       );
 
+      this.renderWorker.postMessage({
+        type: "setHoverPosition",
+        position: [xCell, yCell],
+      } satisfies Command);
+
       if (
         !(
           this.previousCell &&
@@ -130,7 +135,10 @@ document.addEventListener("alpine:init", () => {
     },
 
     onMouseLeave() {
-      this.mouseCoords = null;
+      this.renderWorker.postMessage({
+        type: "setHoverPosition",
+        position: null,
+      } satisfies Command);
     },
 
     canvas() {
