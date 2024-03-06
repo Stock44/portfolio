@@ -1,25 +1,31 @@
-import Command from "../../src/lib/Command.ts";
-import GameOfLife from "../../src/lib/ConwayGame.ts";
+import Command from "../../src/lib/command.ts";
+import {
+  doGameStep,
+  drawLiveCells,
+  makeGameOfLife,
+  toggleCells,
+  updateSize,
+} from "../../src/lib/conwayGame.ts";
 
 // global variables
 let canvas: OffscreenCanvas | null = null;
 let cellWidth = 0;
 let cellHeight = 0;
+let cellColor = "#FFFFFF";
 let columns = 0;
 let rows = 0;
 let pause = false;
 let updateRate = 1000;
 
 // game instance
-const game = new GameOfLife(0, 0, "#FFFFFF");
+let game = makeGameOfLife();
 
 function updateGrid() {
   if (canvas) {
     rows = Math.floor(canvas.width / cellHeight);
     columns = Math.floor(canvas.height / cellWidth);
+    updateSize(game, rows, columns);
   }
-
-  game.setGridSize(rows, columns);
 }
 
 // command handler
@@ -27,7 +33,7 @@ addEventListener("message", (event: MessageEvent<Command>) => {
   const command = event.data;
   switch (command.type) {
     case "changeCellColor":
-      game.setCellColor(command.color);
+      cellColor = command.color;
       break;
     case "changeResolution":
       if (canvas) {
@@ -45,7 +51,7 @@ addEventListener("message", (event: MessageEvent<Command>) => {
       updateRate = command.updateRate;
       break;
     case "toggleCell":
-      game.toggleCell(command.x, command.y);
+      game = toggleCells(game, [command.x, command.y]);
       break;
     case "setRenderTarget":
       canvas = command.target;
@@ -79,7 +85,7 @@ function update() {
   previousUpdate = time;
 
   // Do game update
-  game.step();
+  game = doGameStep(game);
   update();
 }
 
@@ -93,7 +99,7 @@ function render() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  game.drawLiveCells(cellWidth, cellHeight, ctx);
+  drawLiveCells(ctx, game, cellWidth, cellHeight, cellColor);
 
   requestAnimationFrame(render);
 }

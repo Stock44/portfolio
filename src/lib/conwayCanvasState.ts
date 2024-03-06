@@ -1,4 +1,4 @@
-import Command from "./Command.ts";
+import Command from "./command.ts";
 import Alpine from "alpinejs";
 
 document.addEventListener("alpine:init", () => {
