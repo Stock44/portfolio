@@ -1,0 +1,47 @@
+---
+interface Props {
+  "class": string;
+}
+
+const { "class": className } = Astro.props;
+---
+
+<script>
+  import "../lib/conwayCanvasState.ts";
+</script>
+
+<div class:list={["relative overflow-hidden", className]} x-data="conwayCanvasState">
+  <canvas class="h-full w-full touch-none" x-bind="canvas" />
+
+  <!-- Control bar -->
+  <div class="absolute z-10 top-0 left-0 flex">
+    <div @click="paused = !paused"
+         class="p-2  fill-magenta-800 hover:bg-white/5 hover:fill-magenta-700">
+      <svg viewBox="0 0 16 16" class="w-4 h-4 ">
+        <g x-show="!paused" x-transition>
+          <rect x="0" width="6" height="16" />
+          <rect x="10" width="6" height="16" />
+        </g>
+        <path xmlns="http://www.w3.org/2000/svg" x-show="paused"
+              x-transition
+              d="M0,0L16,8L0,16L0,0Z" />
+      </svg>
+    </div>
+    <div @click="updateRate += 50"
+         class="p-2  fill-magenta-800 hover:bg-white/5 hover:fill-magenta-700">
+      <svg viewBox="0 0 16 16" class="w-4 h-4 ">
+        <rect x="0" y="5" width="16" height="6" />
+      </svg>
+    </div>
+    <div @click="updateRate -= updateRate - 100 > 0 ? 50 : 0"
+         class="p-2  fill-magenta-800 hover:bg-white/5 hover:fill-magenta-700">
+      <svg viewBox="0 0 16 16" class="w-4 h-4 ">
+        <rect x="0" y="5" width="16" height="6" />
+        <rect x="5" y="0" width="6" height="16" />
+      </svg>
+    </div>
+    <div class="m-2 h-4 text-magenta-800 select-none">
+      <p x-text="`${(1000 / updateRate).toPrecision(2)} HZ`" class="text-[12px] font-black" />
+    </div>
+  </div>
+</div>

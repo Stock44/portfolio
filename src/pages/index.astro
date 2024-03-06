@@ -1,21 +1,21 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Sidebar from "../components/Sidebar.astro";
+import ConwayCanvas from "../components/ConwayCanvas.astro";
 ---
-<script>
-  import "../lib/conwayCanvasState.ts";
-</script>
+
 
 <Layout title="Welcome to Astro.">
   <main>
     <div
       class="h-screen flex flex-col">
       <div
-        class="bg-magenta-800 h-20 lg:h-20 flex-none text-xl uppercase text-magenta-400 font-bold border-b-16 border-magenta-700">
+        class="bg-magenta-800 flex-none uppercase text-magenta-400 font-bold border-b-16 border-magenta-700">
         <div class="mx-auto max-w-screen-2xl flex justify-between h-full" x-data="{openSidebar: false}">
-          <div class="p-4 w-16 flex lg:hidden  hover:bg-white/5 cursor-pointer" @click="openSidebar = !openSidebar">
+          <div class="lg:hidden aspect-square p-4 flex justify-center items-center hover:bg-white/5 cursor-pointer"
+               @click="openSidebar = !openSidebar">
             <svg xmlns="http://www.w3.org/2000/svg"
-                 class="fill-magenta-400"
+                 class="fill-magenta-400 w-6 h-6"
                  viewBox="0 0 48 48">
               <rect class="top"
                     x="0" y="0"
@@ -47,20 +47,20 @@ import Sidebar from "../components/Sidebar.astro";
             </div>
           </Sidebar>
 
-          <div class="items-stretch hidden lg:flex select-none">
-            <div class="cursor-pointer hover:bg-white/5 px-8 flex items-center transition-colors">
+          <div class="items-stretch hidden lg:flex select-none text-base">
+            <div class="cursor-pointer hover:bg-white/5 py-4 px-8 flex items-center transition-colors">
               Home
             </div>
-            <div class="cursor-pointer hover:bg-white/5 px-8  flex items-center transition-colors">
+            <div class="cursor-pointer hover:bg-white/5 py-4 px-8  flex items-center transition-colors">
               About me
             </div>
-            <div class="cursor-pointer hover:bg-white/5 px-8 flex items-center transition-colors">
+            <div class="cursor-pointer hover:bg-white/5 py-4 px-8 flex items-center transition-colors">
               Projects
             </div>
-            <div class="cursor-pointer hover:bg-white/5 px-8 flex items-center transition-colors">
+            <div class="cursor-pointer hover:bg-white/5 py-4 px-8 flex items-center transition-colors">
               GitHub ↗
             </div>
-            <div class="cursor-pointer hover:bg-white/5 px-8 flex items-center transition-colors">
+            <div class="cursor-pointer hover:bg-white/5 py-4 px-8 flex items-center transition-colors">
               LinkedIn ↗
             </div>
           </div>
@@ -83,39 +83,7 @@ import Sidebar from "../components/Sidebar.astro";
 
       </div>
 
-      <div class="relative flex-1 overflow-hidden" x-data="conwayCanvasState">
-        <canvas class="h-full w-full touch-none" x-bind="canvas" />
-        <div class="absolute z-10 top-0 left-0 flex">
-          <div @click="paused = !paused"
-               class="p-2  fill-magenta-800 hover:bg-white/5 hover:fill-magenta-700">
-            <svg viewBox="0 0 16 16" class="w-4 h-4 ">
-              <g x-show="!paused" x-transition>
-                <rect x="0" width="6" height="16" />
-                <rect x="10" width="6" height="16" />
-              </g>
-              <path xmlns="http://www.w3.org/2000/svg" x-show="paused"
-                    x-transition
-                    d="M0,0L16,8L0,16L0,0Z" />
-            </svg>
-          </div>
-          <div @click="updateRate += 50"
-               class="p-2  fill-magenta-800 hover:bg-white/5 hover:fill-magenta-700">
-            <svg viewBox="0 0 16 16" class="w-4 h-4 ">
-              <rect x="0" y="5" width="16" height="6" />
-            </svg>
-          </div>
-          <div @click="updateRate -= updateRate - 100 > 0 ? 50 : 0"
-               class="p-2  fill-magenta-800 hover:bg-white/5 hover:fill-magenta-700">
-            <svg viewBox="0 0 16 16" class="w-4 h-4 ">
-              <rect x="0" y="5" width="16" height="6" />
-              <rect x="5" y="0" width="6" height="16" />
-            </svg>
-          </div>
-          <div class="m-2 h-4 text-magenta-800 select-none">
-            <p x-text="`${(1000 / updateRate).toPrecision(2)} HZ`" class="text-[12px] font-bold"/>
-          </div>
-        </div>
-      </div>
+      <ConwayCanvas class="flex-1" />
 
       <div
         class="flex-none bg-magenta-800 h-fit 2xl:h-56 border-t-16 border-magenta-700 text-magenta-400 uppercase justify-between">
