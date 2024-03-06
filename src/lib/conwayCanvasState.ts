@@ -53,6 +53,12 @@ document.addEventListener("alpine:init", () => {
       } satisfies Command);
     },
 
+    clear() {
+      this.renderWorker.postMessage({
+        type: "clear",
+      } satisfies Command);
+    },
+
     onCanvasInit() {
       const canvas = this.$el as HTMLCanvasElement;
       const offscreen = canvas.transferControlToOffscreen();

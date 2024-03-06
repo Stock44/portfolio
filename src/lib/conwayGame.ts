@@ -26,10 +26,13 @@ export interface GameOfLife {
  * Creates a new GameOfLife object.
  * @returns {GameOfLife} A new GameOfLife object with initial values.
  */
-export function makeGameOfLife(): GameOfLife {
+export function makeGameOfLife(
+  rows: number = 0,
+  columns: number = 0,
+): GameOfLife {
   return {
-    rows: 0,
-    columns: 0,
+    rows: rows,
+    columns: columns,
     liveCells: makeCellSet(),
   };
 }

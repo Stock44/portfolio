@@ -34,6 +34,9 @@ function updateGrid() {
 addEventListener("message", (event: MessageEvent<Command>) => {
   const command = event.data;
   switch (command.type) {
+    case "clear":
+      game = makeGameOfLife(game.rows, game.columns);
+      break;
     case "changeCellColor":
       cellColor = command.color;
       break;

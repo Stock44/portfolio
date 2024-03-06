@@ -43,11 +43,16 @@ interface ToggleCell {
   y: number;
 }
 
+interface Clear {
+  type: "clear";
+}
+
 type Command =
   | ChangeResolution
   | ChangeCellSize
   | ChangeCellColor
   | ChangeUpdateRate
+  | Clear
   | ToggleCell
   | SetPaused
   | SetRenderTarget
