@@ -32,8 +32,9 @@ interface ChangeUpdateRate {
   updateRate: number;
 }
 
-interface TogglePause {
-  type: "togglePause";
+interface SetPaused {
+  type: "setPaused";
+  paused: boolean;
 }
 
 interface ToggleCell {
@@ -47,8 +48,8 @@ type Command =
   | ChangeCellSize
   | ChangeCellColor
   | ChangeUpdateRate
-  | TogglePause
   | ToggleCell
+  | SetPaused
   | SetRenderTarget
   | SetHoverPosition;
 

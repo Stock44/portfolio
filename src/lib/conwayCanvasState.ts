@@ -9,6 +9,10 @@ document.addEventListener("alpine:init", () => {
 
     previousCell: null as [number, number] | null,
 
+    paused: false,
+
+    updateRate: 1000,
+
     renderWorker: new Worker(
       new URL("/scripts/renderWorker.ts", import.meta.url),
       {
@@ -16,6 +20,38 @@ document.addEventListener("alpine:init", () => {
         name: "conwayRenderer",
       },
     ),
+
+    init() {
+      this.$watch("paused", (value) =>
+        this.renderWorker.postMessage({
+          type: "setPaused",
+          paused: value,
+        } satisfies Command),
+      );
+
+      this.$watch("updateRate", (value) =>
+        this.renderWorker.postMessage({
+          type: "changeUpdateRate",
+          updateRate: value,
+        } satisfies Command),
+      );
+
+      this.renderWorker.postMessage({
+        type: "changeUpdateRate",
+        updateRate: this.updateRate,
+      } satisfies Command);
+
+      this.renderWorker.postMessage({
+        type: "changeCellSize",
+        width: 16,
+        height: 16,
+      } satisfies Command);
+
+      this.renderWorker.postMessage({
+        type: "changeCellColor",
+        color: "#ff0082",
+      } satisfies Command);
+    },
 
     onCanvasInit() {
       const canvas = this.$el as HTMLCanvasElement;
@@ -38,9 +74,10 @@ document.addEventListener("alpine:init", () => {
 
     globalCoordToCell(globalX: number, globalY: number): [number, number] {
       const canvas = this.$el as HTMLCanvasElement;
+      const { top, left } = canvas.getBoundingClientRect();
 
-      const x = globalX - canvas.offsetLeft;
-      const y = globalY - canvas.offsetTop;
+      const x = globalX - left;
+      const y = globalY - top;
       const xCell = Math.floor(x / 16);
       const yCell = Math.floor(y / 16);
       return [xCell, yCell];
@@ -52,19 +89,6 @@ document.addEventListener("alpine:init", () => {
         type: "toggleCell",
         x,
         y,
-      } satisfies Command);
-    },
-
-    init() {
-      this.renderWorker.postMessage({
-        type: "changeCellSize",
-        width: 16,
-        height: 16,
-      } satisfies Command);
-
-      this.renderWorker.postMessage({
-        type: "changeCellColor",
-        color: "#ff0082",
       } satisfies Command);
     },
 

@@ -50,7 +50,7 @@ addEventListener("message", (event: MessageEvent<Command>) => {
       updateGrid();
       break;
     case "changeUpdateRate":
-      updateRate = command.updateRate;
+      updateRate = command.updateRate > 0 ? command.updateRate : updateRate;
       break;
     case "toggleCell":
       game = toggleCells(game, [command.x, command.y]);
@@ -61,8 +61,8 @@ addEventListener("message", (event: MessageEvent<Command>) => {
     case "setHoverPosition":
       hoverPosition = command.position;
       break;
-    case "togglePause":
-      pause = !pause;
+    case "setPaused":
+      pause = command.paused;
       break;
   }
 });
