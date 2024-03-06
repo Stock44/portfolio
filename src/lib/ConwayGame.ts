@@ -1,9 +1,13 @@
-export default class GameOfLife {
-  rows: number;
-  columns: number;
-  cellColor: string;
+type Cell = [number, number];
 
-  liveCells: Map<number, Set<number>> = new Map();
+export default class GameOfLife {
+  private rows: number;
+  private columns: number;
+
+  private cellColor: string;
+
+  private activeCells: Map<number, Set<number>> = new Map();
+  private liveCells: Map<number, Set<number>> = new Map();
 
   constructor(rows: number, columns: number, cellColor: string) {
     this.rows = rows;
@@ -33,21 +37,9 @@ export default class GameOfLife {
       } else {
         row.add(y);
       }
-      return;
+    } else {
+      this.liveCells.set(x, new Set([y]));
     }
-
-    this.liveCells.set(x, new Set());
-
-    this.liveCells.get(x)!.add(y);
-  }
-
-  isCellAlive(x: number, y: number) {
-    const row = this.liveCells.get(x);
-    if (!row) {
-      return false;
-    }
-
-    return row.has(y);
   }
 
   drawLiveCells(
@@ -63,136 +55,135 @@ export default class GameOfLife {
     }
   }
 
+  addActiveCell(x: number, y: number) {
+    if (this.activeCells.has(x)) {
+      this.activeCells.get(x)!.add(y);
+    } else {
+      this.activeCells.set(x, new Set([y]));
+    }
+  }
+
+  processCellNeighborCount(
+    x: number,
+    y: number,
+    isActive: boolean = true,
+  ): number {
+    let liveNeighbors = 0;
+    const top = x === 0 ? this.rows - 1 : x - 1;
+    const bottom = x === this.rows - 1 ? 0 : x + 1;
+    const left = y === 0 ? this.columns - 1 : y - 1;
+    const right = y === this.columns - 1 ? 0 : y + 1;
+
+    if (this.liveCells.has(top)) {
+      const topCells = this.liveCells.get(top)!;
+      if (topCells.has(y)) {
+        liveNeighbors++;
+      } else if (isActive) {
+        this.addActiveCell(top, y);
+      }
+      if (topCells.has(left)) {
+        liveNeighbors++;
+      } else if (isActive) {
+        this.addActiveCell(top, left);
+      }
+
+      if (topCells.has(right)) {
+        liveNeighbors++;
+      } else if (isActive) {
+        this.addActiveCell(top, right);
+      }
+    } else if (isActive) {
+      this.addActiveCell(top, left);
+      this.addActiveCell(top, y);
+      this.addActiveCell(top, right);
+    }
+    if (this.liveCells.has(bottom)) {
+      const bottomCells = this.liveCells.get(bottom)!;
+      if (bottomCells.has(y)) {
+        liveNeighbors++;
+      } else if (isActive) {
+        this.addActiveCell(bottom, y);
+      }
+      if (bottomCells.has(left)) {
+        liveNeighbors++;
+      } else if (isActive) {
+        this.addActiveCell(bottom, left);
+      }
+
+      if (bottomCells.has(right)) {
+        liveNeighbors++;
+      } else if (isActive) {
+        this.addActiveCell(bottom, right);
+      }
+    } else if (isActive) {
+      this.addActiveCell(bottom, left);
+      this.addActiveCell(bottom, y);
+      this.addActiveCell(bottom, right);
+    }
+
+    if (this.liveCells.has(x)) {
+      const row = this.liveCells.get(x)!;
+      if (row.has(left)) {
+        liveNeighbors++;
+      } else if (isActive) {
+        this.addActiveCell(x, left);
+      }
+      if (row.has(right)) {
+        liveNeighbors++;
+      } else if (isActive) {
+        this.addActiveCell(x, right);
+      }
+    } else if (isActive) {
+      this.addActiveCell(x, left);
+      this.addActiveCell(x, right);
+    }
+
+    return liveNeighbors;
+  }
+
   step() {
-    const cellsToKill: Array<[number, number]> = [];
+    const cellsToKill: Array<Cell> = [];
 
-    const emptyCellsToCheck: Array<[number, number]> = [];
-
-    const cellsToAdd: Array<[number, number]> = [];
+    const cellsToAdd: Array<Cell> = [];
 
     const emptyRows: Set<number> = new Set();
 
-    for (const [row, cells] of this.liveCells) {
-      for (const cell of cells) {
-        let liveNeighbors = 0;
-        const topRow = row === 0 ? this.rows - 1 : row - 1;
-        const bottomRow = row === this.rows - 1 ? 0 : row + 1;
-        const leftColumn = cell === 0 ? this.columns - 1 : cell - 1;
-        const rightColumn = cell === this.columns - 1 ? 0 : cell + 1;
-
-        if (this.liveCells.has(topRow)) {
-          const topCells = this.liveCells.get(topRow)!;
-          if (topCells.has(cell)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([topRow, cell]);
-          }
-          if (topCells.has(leftColumn)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([topRow, leftColumn]);
-          }
-
-          if (topCells.has(rightColumn)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([topRow, rightColumn]);
-          }
-        } else {
-          emptyCellsToCheck.push(
-            [topRow, leftColumn],
-            [topRow, rightColumn],
-            [topRow, cell],
-          );
-        }
-        if (this.liveCells.has(bottomRow)) {
-          const bottomCells = this.liveCells.get(bottomRow)!;
-          if (bottomCells.has(cell)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([bottomRow, cell]);
-          }
-          if (bottomCells.has(leftColumn)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([bottomRow, leftColumn]);
-          }
-
-          if (bottomCells.has(rightColumn)) {
-            liveNeighbors++;
-          } else {
-            emptyCellsToCheck.push([bottomRow, rightColumn]);
-          }
-        } else {
-          emptyCellsToCheck.push(
-            [bottomRow, leftColumn],
-            [bottomRow, rightColumn],
-            [bottomRow, cell],
-          );
-        }
-
-        if (cells.has(leftColumn)) {
-          liveNeighbors++;
-        } else {
-          emptyCellsToCheck.push([row, leftColumn]);
-        }
-        if (cells.has(rightColumn)) {
-          liveNeighbors++;
-        } else {
-          emptyCellsToCheck.push([row, rightColumn]);
-        }
+    for (const [x, row] of this.liveCells) {
+      for (const y of row) {
+        const liveNeighbors = this.processCellNeighborCount(x, y);
 
         if (liveNeighbors < 2 || liveNeighbors > 3) {
-          cellsToKill.push([row, cell]);
+          cellsToKill.push([x, y]);
         }
       }
     }
 
-    for (const [row, column] of emptyCellsToCheck) {
-      let liveNeighbors = 0;
-      const topRow = row === 0 ? this.rows - 1 : row - 1;
-      const bottomRow = row === this.rows - 1 ? 0 : row + 1;
-      const leftColumn = column === 0 ? this.columns - 1 : column - 1;
-      const rightColumn = column === this.columns - 1 ? 0 : column + 1;
+    for (const [x, row] of this.activeCells) {
+      for (const y of row) {
+        const liveNeighbors = this.processCellNeighborCount(x, y, false);
 
-      if (this.liveCells.has(topRow)) {
-        const topCells = this.liveCells.get(topRow)!;
-        liveNeighbors += topCells.has(column) ? 1 : 0;
-        liveNeighbors += topCells.has(leftColumn) ? 1 : 0;
-        liveNeighbors += topCells.has(rightColumn) ? 1 : 0;
-      }
-      if (this.liveCells.has(bottomRow)) {
-        const bottomCells = this.liveCells.get(bottomRow)!;
-        liveNeighbors += bottomCells.has(column) ? 1 : 0;
-        liveNeighbors += bottomCells.has(leftColumn) ? 1 : 0;
-        liveNeighbors += bottomCells.has(rightColumn) ? 1 : 0;
-      }
-
-      if (this.liveCells.has(row)) {
-        const cells = this.liveCells.get(row)!;
-        liveNeighbors += cells.has(leftColumn) ? 1 : 0;
-        liveNeighbors += cells.has(rightColumn) ? 1 : 0;
-      }
-
-      if (liveNeighbors === 3) {
-        cellsToAdd.push([row, column]);
+        if (liveNeighbors === 3) {
+          cellsToAdd.push([x, y]);
+        }
       }
     }
 
-    for (const [row, column] of cellsToAdd) {
-      if (this.liveCells.has(row)) {
-        this.liveCells.get(row)!.add(column);
+    this.activeCells.clear();
+
+    for (const [x, y] of cellsToAdd) {
+      if (this.liveCells.has(x)) {
+        this.liveCells.get(x)!.add(y);
       } else {
-        this.liveCells.set(row, new Set());
-        this.liveCells.get(row)!.add(column);
+        this.liveCells.set(x, new Set());
+        this.liveCells.get(x)!.add(y);
       }
     }
 
-    for (const [row, column] of cellsToKill) {
-      const cells = this.liveCells.get(row)!;
-      cells.delete(column);
+    for (const [x, y] of cellsToKill) {
+      const cells = this.liveCells.get(x)!;
+      cells.delete(y);
       if (cells.size === 0) {
-        emptyRows.add(row);
+        emptyRows.add(x);
       }
     }
 

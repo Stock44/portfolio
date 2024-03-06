@@ -23,7 +23,7 @@ function updateGrid() {
 }
 
 // command handler
-onmessage = (event: MessageEvent<Command>) => {
+addEventListener("message", (event: MessageEvent<Command>) => {
   const command = event.data;
   switch (command.type) {
     case "changeCellColor":
@@ -50,11 +50,14 @@ onmessage = (event: MessageEvent<Command>) => {
     case "setRenderTarget":
       canvas = command.target;
       break;
+    case "setHoverPosition":
+      // TODO
+      break;
     case "togglePause":
       pause = !pause;
       break;
   }
-};
+});
 
 let previousUpdate = 0;
 

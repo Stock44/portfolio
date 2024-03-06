@@ -2,99 +2,12 @@
 import Layout from "../layouts/Layout.astro";
 import Sidebar from "../components/Sidebar.astro";
 ---
-
 <script>
-  import type Command from "../lib/Command";
-
-  const renderWorker = new Worker(new URL("/scripts/renderWorker.ts", import.meta.url), {
-    type: "module",
-    name: "conwayRenderer"
-  });
-
-  const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-
-  const offscreen = canvas.transferControlToOffscreen();
-
-  renderWorker.postMessage({
-    type: "setRenderTarget",
-    target: offscreen
-  } satisfies Command, [offscreen]);
-
-  renderWorker.postMessage({
-    type: "changeResolution",
-    width: canvas.clientWidth,
-    height: canvas.clientHeight
-  } satisfies Command);
-
-  renderWorker.postMessage({
-    type: "changeCellSize",
-    width: 16,
-    height: 16
-  } satisfies Command);
-
-  renderWorker.postMessage({
-    type: "changeCellColor",
-    color: "#ff0082"
-  } satisfies Command);
-
-  let mouseCoords: [number, number] | null = null;
-
-  let mouseDown = false;
-
-  let previousCell: [number, number] | null = null;
-
-  canvas.onmouseup = () => {
-    mouseDown = false;
-    previousCell = null;
-  };
-
-  canvas.onmousedown = (event) => {
-    mouseDown = true;
-    mouseCoords = [event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop];
-    const [x, y] = mouseCoords;
-    const mouseXCell = Math.floor(x / 16);
-    const mouseYCell = Math.floor(y / 16);
-    previousCell = [mouseXCell, mouseYCell]
-    renderWorker.postMessage({
-      type: "toggleCell",
-      x: mouseXCell,
-      y: mouseYCell
-    } satisfies Command);
-  };
-
-  canvas.onmouseleave = () => {
-    mouseCoords = null;
-  };
-
-  canvas.onmousemove = (event) => {
-    mouseCoords = [event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop];
-    const [x, y] = mouseCoords;
-
-    const mouseXCell = Math.floor(x / 16);
-    const mouseYCell = Math.floor(y / 16);
-
-    if (!(previousCell && mouseXCell === previousCell[0] && mouseYCell === previousCell[1]) && mouseDown) {
-      renderWorker.postMessage({
-        type: "toggleCell",
-        x: mouseXCell,
-        y: mouseYCell
-      } satisfies Command);
-
-      previousCell = [mouseXCell, mouseYCell];
-    }
-  };
-
-  window.addEventListener("resize", (event) => {
-    renderWorker.postMessage({
-      type: "changeResolution",
-      width: canvas.clientWidth,
-      height: canvas.clientHeight
-    } satisfies Command);
-  });
+  import "../lib/conwayCanvasState.ts";
 </script>
 
 <Layout title="Welcome to Astro.">
-  <main>
+  <main x-data="conwayCanvasState">
     <div
       class="h-screen flex flex-col">
       <div
@@ -171,8 +84,7 @@ import Sidebar from "../components/Sidebar.astro";
       </div>
 
       <div class="flex-1 overflow-hidden">
-        <canvas id="canvas" class="h-full w-full">
-        </canvas>
+        <canvas class="h-full w-full" x-bind="canvas" />
       </div>
 
 

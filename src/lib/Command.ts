@@ -3,6 +3,12 @@ interface SetRenderTarget {
   target: OffscreenCanvas;
 }
 
+interface SetHoverPosition {
+  type: "setHoverPosition";
+  x: number;
+  y: number;
+}
+
 interface ChangeResolution {
   type: "changeResolution";
   height: number;
@@ -42,6 +48,7 @@ type Command =
   | ChangeUpdateRate
   | TogglePause
   | ToggleCell
-  | SetRenderTarget;
+  | SetRenderTarget
+  | SetHoverPosition;
 
 export default Command;
