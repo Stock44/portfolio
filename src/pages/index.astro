@@ -7,7 +7,7 @@ import Sidebar from "../components/Sidebar.astro";
 </script>
 
 <Layout title="Welcome to Astro.">
-  <main x-data="conwayCanvasState">
+  <main>
     <div
       class="h-screen flex flex-col">
       <div
@@ -83,7 +83,7 @@ import Sidebar from "../components/Sidebar.astro";
 
       </div>
 
-      <div class="relative flex-1 overflow-hidden">
+      <div class="relative flex-1 overflow-hidden" x-data="conwayCanvasState">
         <canvas class="h-full w-full touch-none" x-bind="canvas" />
         <div class="absolute z-10 top-0 left-0 flex">
           <div @click="paused = !paused"
