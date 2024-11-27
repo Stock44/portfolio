@@ -11,7 +11,7 @@ document.addEventListener("alpine:init", () => {
 
     paused: false,
 
-    updateRate: 5,
+    updateRate: 2,
 
     renderWorker: new Worker(
       new URL("/scripts/renderWorker.ts", import.meta.url),
