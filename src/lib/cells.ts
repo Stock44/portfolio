@@ -126,23 +126,72 @@ export function fillRegionWithRandomPattern(
 
   const modifiedSet = new Map(cells);
 
+  // Define four glider patterns for 0, 90, 180, and 270 degrees
+  const gliderPatterns: Cell[][] = [
+    [
+      [0, 1],
+      [1, 2],
+      [2, 0],
+      [2, 1],
+      [2, 2], // 0 degrees
+    ],
+    [
+      [0, 2],
+      [1, 2],
+      [0, 1],
+      [1, 0],
+      [2, 2], // 90 degrees
+    ],
+    [
+      [0, 1],
+      [1, 0],
+      [2, 2],
+      [2, 1],
+      [2, 0], // 180 degrees
+    ],
+    [
+      [0, 0],
+      [1, 0],
+      [0, 1],
+      [1, 2],
+      [2, 0], // 270 degrees
+    ],
+  ];
+
   for (let x = x1; x < x2; x++) {
-    const row = cells.get(x) ?? new Set();
+    // const row = cells.get(x) ?? new Set();
 
     for (let y = y1; y < y2; y++) {
-      if (Math.random() < 0.07) {
-        row.add(y);
-      } else {
-        row.delete(y);
+      // Check if we should place a glider
+      if (Math.random() < 0.001) {
+        // Select a random glider pattern
+        const gliderPattern =
+          gliderPatterns[Math.floor(Math.random() * gliderPatterns.length)]!;
+
+        // Check if glider can fit within bounds
+        const canPlaceGlider = gliderPattern.every(
+          ([dx, dy]) => x + dx < x2 && y + dy < y2,
+        );
+
+        if (canPlaceGlider) {
+          // Place the glider pattern
+          gliderPattern.forEach(([dx, dy]) => {
+            const newX = x + dx;
+            const newY = y + dy;
+            const rowSet = modifiedSet.get(newX) ?? new Set();
+            rowSet.add(newY);
+            modifiedSet.set(newX, rowSet);
+          });
+        }
       }
     }
+    //
+    // if (row.size === 0) {
+    //   modifiedSet.delete(x);
+    //   continue;
+    // }
 
-    if (row.size === 0) {
-      modifiedSet.delete(x);
-      continue;
-    }
-
-    modifiedSet.set(x, row);
+    // modifiedSet.set(x, row);
   }
 
   return modifiedSet;
