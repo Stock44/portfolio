@@ -91,6 +91,7 @@ export const toggleCells = produce((draft: CellSet, ...cells: Cell[]) => {
 
 export function union(l: Readonly<CellSet>, r: Readonly<CellSet>): CellSet {
   const newSet: CellSet = new Map(l);
+
   r.forEach((v, k) => {
     const set = newSet.get(k);
     if (set) {
@@ -110,4 +111,39 @@ export function* iterate(l: Readonly<CellSet>) {
       yield [x, y] satisfies Cell;
     }
   }
+}
+
+export function fillRegionWithRandomPattern(
+  cells: Readonly<CellSet>,
+  start: [number, number],
+  end: [number, number],
+) {
+  const [x1, y1] = start;
+  const [x2, y2] = end;
+
+  if (x1 > x2) throw new Error("x1 must be less than or equal to x2");
+  if (y1 > y2) throw new Error("y1 must be less than or equal to y2");
+
+  const modifiedSet = new Map(cells);
+
+  for (let x = x1; x < x2; x++) {
+    const row = cells.get(x) ?? new Set();
+
+    for (let y = y1; y < y2; y++) {
+      if (Math.random() < 0.07) {
+        row.add(y);
+      } else {
+        row.delete(y);
+      }
+    }
+
+    if (row.size === 0) {
+      modifiedSet.delete(x);
+      continue;
+    }
+
+    modifiedSet.set(x, row);
+  }
+
+  return modifiedSet;
 }

@@ -11,7 +11,7 @@ document.addEventListener("alpine:init", () => {
 
     paused: false,
 
-    updateRate: 1000,
+    updateRate: 1,
 
     renderWorker: new Worker(
       new URL("/scripts/renderWorker.ts", import.meta.url),
@@ -45,11 +45,6 @@ document.addEventListener("alpine:init", () => {
         type: "changeCellSize",
         width: 16,
         height: 16,
-      } satisfies Command);
-
-      this.renderWorker.postMessage({
-        type: "changeCellColor",
-        color: "#ff0082",
       } satisfies Command);
     },
 

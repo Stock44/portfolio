@@ -1,0 +1,18 @@
+---
+interface Props {
+  readonly pageName: string;
+  readonly number: number;
+}
+
+const { pageName, number } = Astro.props;
+---
+
+<div
+  class="flex gap-4 items-baseline group justify-between transition-colors hover:bg-magenta-800 p-2 rounded cursor-pointer">
+  <p>
+    {pageName}
+  </p>
+  <p class="text-magenta-700 group-hover:text-magenta-600 transition-colors">
+    #{number}
+  </p>
+</div>

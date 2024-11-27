@@ -3,6 +3,7 @@ import {
   addCells,
   Cell,
   CellSet,
+  fillRegionWithRandomPattern,
   hasCell,
   iterate,
   makeCellSet,
@@ -47,8 +48,29 @@ export function makeGameOfLife(
  */
 export const updateSize = produce(
   (draft: GameOfLife, rows: number, columns: number) => {
+    const previousRows = draft.rows;
+    const previousCols = draft.columns;
+
     draft.rows = rows;
     draft.columns = columns;
+
+    if (previousRows < rows) {
+      console.log("adding rows");
+      draft.liveCells = fillRegionWithRandomPattern(
+        draft.liveCells,
+        [previousRows, 0],
+        [rows - 1, columns],
+      );
+    }
+
+    if (previousCols < columns) {
+      console.log("adding cols");
+      draft.liveCells = fillRegionWithRandomPattern(
+        draft.liveCells,
+        [0, previousCols],
+        [rows, columns - 1],
+      );
+    }
   },
 );
 
@@ -119,9 +141,11 @@ export function drawLiveCells(
   game: Readonly<GameOfLife>,
   cellWidth: number,
   cellHeight: number,
-  fillStyle: string,
+  cellColor: string,
 ) {
-  ctx.fillStyle = fillStyle;
+  ctx.fillStyle = cellColor;
+  ctx.shadowColor = cellColor;
+  ctx.shadowBlur = 5;
 
   game.liveCells.forEach((row, x) =>
     row.forEach((y) =>

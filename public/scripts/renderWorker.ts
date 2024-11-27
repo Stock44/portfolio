@@ -12,11 +12,11 @@ import { type Cell } from "../../src/lib/cells.ts";
 let canvas: OffscreenCanvas | null = null;
 let cellWidth = 0;
 let cellHeight = 0;
-let cellColor = "#FFFFFF";
+const cellColor = "#2a1219";
 let columns = 0;
 let rows = 0;
 let pause = false;
-let updateRate = 1000;
+let updateInterval = 1000;
 let hoverPosition: Cell | null = null;
 
 // game instance
@@ -26,7 +26,7 @@ function updateGrid() {
   if (canvas) {
     rows = Math.floor(canvas.width / cellHeight);
     columns = Math.floor(canvas.height / cellWidth);
-    updateSize(game, rows, columns);
+    game = updateSize(game, rows, columns);
   }
 }
 
@@ -36,9 +36,6 @@ addEventListener("message", (event: MessageEvent<Command>) => {
   switch (command.type) {
     case "clear":
       game = makeGameOfLife(game.rows, game.columns);
-      break;
-    case "changeCellColor":
-      cellColor = command.color;
       break;
     case "changeResolution":
       if (canvas) {
@@ -53,7 +50,8 @@ addEventListener("message", (event: MessageEvent<Command>) => {
       updateGrid();
       break;
     case "changeUpdateRate":
-      updateRate = command.updateRate > 0 ? command.updateRate : updateRate;
+      updateInterval =
+        command.updateRate > 0 ? 1000 / command.updateRate : updateInterval;
       break;
     case "toggleCell":
       game = toggleCells(game, [command.x, command.y]);
@@ -75,7 +73,7 @@ let previousUpdate = 0;
 function update() {
   // Skip if paused
   if (pause) {
-    setTimeout(update, updateRate);
+    setTimeout(update, updateInterval);
     return;
   }
 
@@ -83,8 +81,8 @@ function update() {
   const time = Date.now();
   const deltaTime = time - previousUpdate;
 
-  if (updateRate > deltaTime) {
-    setTimeout(update, updateRate - deltaTime);
+  if (updateInterval > deltaTime) {
+    setTimeout(update, updateInterval - deltaTime);
     return;
   }
   previousUpdate = time;
@@ -108,7 +106,9 @@ function render() {
 
   if (hoverPosition) {
     const [x, y] = hoverPosition;
-    ctx.fillStyle = "#ffffff18";
+    ctx.fillStyle = cellColor;
+    ctx.shadowColor = cellColor;
+    ctx.shadowBlur = 5;
     ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
   }
 

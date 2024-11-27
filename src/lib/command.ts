@@ -22,11 +22,6 @@ interface ChangeCellSize {
   width: number;
 }
 
-interface ChangeCellColor {
-  type: "changeCellColor";
-  color: string;
-}
-
 interface ChangeUpdateRate {
   type: "changeUpdateRate";
   updateRate: number;
@@ -50,7 +45,6 @@ interface Clear {
 type Command =
   | ChangeResolution
   | ChangeCellSize
-  | ChangeCellColor
   | ChangeUpdateRate
   | Clear
   | ToggleCell
