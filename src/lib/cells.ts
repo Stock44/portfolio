@@ -1,4 +1,5 @@
 import { enableMapSet, produce } from "immer";
+import { glider, rotatePatternRandomly } from "./patterns.ts";
 
 enableMapSet();
 
@@ -113,86 +114,45 @@ export function* iterate(l: Readonly<CellSet>) {
   }
 }
 
-export function fillRegionWithRandomPattern(
-  cells: Readonly<CellSet>,
-  start: [number, number],
-  end: [number, number],
-) {
-  const [x1, y1] = start;
-  const [x2, y2] = end;
+export const fillRegionWithRandomPattern = produce(
+  (
+    cells: Readonly<CellSet>,
+    start: [number, number],
+    end: [number, number],
+  ) => {
+    const [x1, y1] = start;
+    const [x2, y2] = end;
 
-  if (x1 > x2) throw new Error("x1 must be less than or equal to x2");
-  if (y1 > y2) throw new Error("y1 must be less than or equal to y2");
+    if (x1 > x2) throw new Error("x1 must be less than or equal to x2");
+    if (y1 > y2) throw new Error("y1 must be less than or equal to y2");
 
-  const modifiedSet = new Map(cells);
+    for (let x = x1; x < x2; x++) {
+      // const row = cells.get(x) ?? new Set();
 
-  // Define four glider patterns for 0, 90, 180, and 270 degrees
-  const gliderPatterns: Cell[][] = [
-    [
-      [0, 1],
-      [1, 2],
-      [2, 0],
-      [2, 1],
-      [2, 2], // 0 degrees
-    ],
-    [
-      [0, 2],
-      [1, 2],
-      [0, 1],
-      [1, 0],
-      [2, 2], // 90 degrees
-    ],
-    [
-      [0, 1],
-      [1, 0],
-      [2, 2],
-      [2, 1],
-      [2, 0], // 180 degrees
-    ],
-    [
-      [0, 0],
-      [1, 0],
-      [0, 1],
-      [1, 2],
-      [2, 0], // 270 degrees
-    ],
-  ];
+      for (let y = y1; y < y2; y++) {
+        // Check if we should place a glider
+        if (Math.random() < 0.001) {
+          // Select a random glider pattern
 
-  for (let x = x1; x < x2; x++) {
-    // const row = cells.get(x) ?? new Set();
+          const gliderPattern = rotatePatternRandomly(glider);
 
-    for (let y = y1; y < y2; y++) {
-      // Check if we should place a glider
-      if (Math.random() < 0.001) {
-        // Select a random glider pattern
-        const gliderPattern =
-          gliderPatterns[Math.floor(Math.random() * gliderPatterns.length)]!;
+          // Check if glider can fit within bounds
+          const canPlaceGlider = gliderPattern.every(
+            ([dx, dy]) => x + dx < x2 && y + dy < y2,
+          );
 
-        // Check if glider can fit within bounds
-        const canPlaceGlider = gliderPattern.every(
-          ([dx, dy]) => x + dx < x2 && y + dy < y2,
-        );
-
-        if (canPlaceGlider) {
-          // Place the glider pattern
-          gliderPattern.forEach(([dx, dy]) => {
-            const newX = x + dx;
-            const newY = y + dy;
-            const rowSet = modifiedSet.get(newX) ?? new Set();
-            rowSet.add(newY);
-            modifiedSet.set(newX, rowSet);
-          });
+          if (canPlaceGlider) {
+            // Place the glider pattern
+            gliderPattern.forEach(([dx, dy]) => {
+              const newX = x + dx;
+              const newY = y + dy;
+              const rowSet = cells.get(newX) ?? new Set();
+              rowSet.add(newY);
+              cells.set(newX, rowSet);
+            });
+          }
         }
       }
     }
-    //
-    // if (row.size === 0) {
-    //   modifiedSet.delete(x);
-    //   continue;
-    // }
-
-    // modifiedSet.set(x, row);
-  }
-
-  return modifiedSet;
-}
+  },
+);
