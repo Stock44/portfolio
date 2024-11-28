@@ -3,7 +3,7 @@
     import "../lib/conwayCanvasState.ts";
   </script>
 
-  <div class="absolute overflow-hidden top-1 left-1 bottom-1 right-1" x-data="conwayCanvasState">
+  <div class="absolute overflow-hidden top-1 left-1 bottom-1 right-1 -z-20" x-data="conwayCanvasState">
     <canvas class="h-full w-full touch-none" x-bind="canvas" />
 
     <!-- Control bar -->
@@ -45,7 +45,8 @@
         </svg>
       </div>
       <div class="m-2 h-4 text-magenta-700 select-none" title="Update rate">
-        <p x-text="`${(updateRate).toPrecision(2)} HZ`" class="text-[12px] font-black drop-shadow-[0_0_5px_theme(colors.magenta.700)]" />
+        <p x-text="`${(updateRate).toPrecision(2)} HZ`"
+           class="text-[12px] font-black drop-shadow-[0_0_5px_theme(colors.magenta.700)]" />
       </div>
     </div>
   </div>

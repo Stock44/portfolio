@@ -13,6 +13,7 @@ let canvas: OffscreenCanvas | null = null;
 let cellWidth = 0;
 let cellHeight = 0;
 const cellColor = "#2a1219";
+const hoverColor = "#1d0c11";
 let columns = 0;
 let rows = 0;
 let pause = false;
@@ -106,8 +107,8 @@ function render() {
 
   if (hoverPosition) {
     const [x, y] = hoverPosition;
-    ctx.fillStyle = cellColor;
-    ctx.shadowColor = cellColor;
+    ctx.fillStyle = hoverColor;
+    ctx.shadowColor = hoverColor;
     ctx.shadowBlur = 5;
     ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
   }

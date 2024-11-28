@@ -10,6 +10,41 @@ export const glider: Pattern = [
   [2, 2],
 ];
 
+export const lightSpaceship: Pattern = [
+  [0, 1],
+  [0, 2],
+  [0, 3],
+  [0, 4],
+  [1, 0],
+  [1, 4],
+  [2, 4],
+  [3, 0],
+  [3, 3],
+];
+
+export const toad: Pattern = [
+  [0, 2],
+  [1, 0],
+  [1, 3],
+  [2, 0],
+  [2, 3],
+  [3, 1],
+];
+
+export const middleSpaceship: Pattern = [
+  [0, 2],
+  [1, 0],
+  [1, 4],
+  [2, 5],
+  [3, 0],
+  [3, 5],
+  [4, 1],
+  [4, 2],
+  [4, 3],
+  [4, 4],
+  [4, 5],
+];
+
 const rotationMatrices: [[number, number], [number, number]][] = [
   [
     [1, 0], // 0 deg
@@ -61,9 +96,14 @@ function mulMatrix(lhs: number[][], rhs: number[][]) {
   return result;
 }
 
+export function selectRandom<T>(x: T[]): T {
+  if (x.length === 0) throw new Error("Cannot select random from empty array");
+
+  return x[Math.floor(Math.random() * x.length)]!;
+}
+
 export function rotatePatternRandomly(pattern: Pattern): Pattern {
-  const rotationMatrix =
-    rotationMatrices[Math.floor(Math.random() * rotationMatrices.length)]!;
+  const rotationMatrix = selectRandom(rotationMatrices);
 
   return pattern.map((cell) => {
     const rotatedCell = mulMatrix(
@@ -76,4 +116,8 @@ export function rotatePatternRandomly(pattern: Pattern): Pattern {
 
     return [x, y];
   });
+}
+
+export function selectRandomPattern() {
+  return selectRandom([lightSpaceship, glider, toad, middleSpaceship]);
 }

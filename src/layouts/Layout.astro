@@ -1,4 +1,6 @@
 ---
+import { twJoin } from "tailwind-merge";
+
 interface Props {
   title: string;
 }
@@ -16,7 +18,7 @@ const { title } = Astro.props;
   <meta name="generator" content={Astro.generator} />
   <title>{title}</title>
 </head>
-<body class="bg-magenta-900 text-stone-50 border-4 box-border border-magenta-400 w-full h-screen">
+<body class={twJoin("bg-magenta-900 text-stone-200 min-h-screen")}>
 <slot />
 </body>
 </html>
@@ -27,6 +29,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-heavy.woff2') format('woff2');
         font-weight: 900;
         font-style: normal;
+        font-display: swap;
     }
 
     @font-face {
@@ -34,6 +37,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-heavyitalic.woff2') format('woff2');
         font-weight: 900;
         font-style: italic;
+        font-display: swap;
     }
 
     @font-face {
@@ -41,6 +45,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-bold.woff2') format('woff2');
         font-weight: 700;
         font-style: normal;
+        font-display: swap;
     }
 
     @font-face {
@@ -48,6 +53,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-bolditalic.woff2') format('woff2');
         font-weight: 700;
         font-style: italic;
+        font-display: swap;
     }
 
     @font-face {
@@ -55,6 +61,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-semibold.woff2') format('woff2');
         font-weight: 600;
         font-style: normal;
+        font-display: swap;
     }
 
     @font-face {
@@ -62,6 +69,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-semibolditalic.woff2') format('woff2');
         font-weight: 600;
         font-style: italic;
+        font-display: swap;
     }
 
     @font-face {
@@ -69,6 +77,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-medium.woff2') format('woff2');
         font-weight: 500;
         font-style: normal;
+        font-display: swap;
     }
 
     @font-face {
@@ -76,6 +85,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-mediumitalic.woff2') format('woff2');
         font-weight: 500;
         font-style: italic;
+        font-display: swap;
     }
 
     @font-face {
@@ -83,6 +93,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-book.woff2') format('woff2');
         font-weight: 400;
         font-style: normal;
+        font-display: swap;
     }
 
     @font-face {
@@ -90,6 +101,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-bookitalic.woff2') format('woff2');
         font-weight: 400;
         font-style: italic;
+        font-display: swap;
     }
 
     @font-face {
@@ -97,6 +109,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-light.woff2') format('woff2');
         font-weight: 300;
         font-style: normal;
+        font-display: swap;
     }
 
     @font-face {
@@ -104,6 +117,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-lightitalic.woff2') format('woff2');
         font-weight: 300;
         font-style: normal;
+        font-display: swap;
     }
 
     @font-face {
@@ -111,6 +125,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-thin.woff2') format('woff2');
         font-weight: 200;
         font-style: normal;
+        font-display: swap;
     }
 
     @font-face {
@@ -118,6 +133,7 @@ const { title } = Astro.props;
         src: url('/fonts/cooperhewitt-thinitalic.woff2') format('woff2');
         font-weight: 200;
         font-style: italic;
+        font-display: swap;
     }
 </style>
 

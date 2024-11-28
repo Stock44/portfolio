@@ -1,0 +1,44 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+
+  return posts.map(entry => ({
+    params: {
+      slug: entry.slug
+    },
+    props: {
+      entry
+    }
+  }));
+}
+
+const { entry } = Astro.props;
+
+const { title } = entry.data;
+
+const { Content } = await entry.render();
+---
+
+<Layout title={title}>
+  <main class="border-t-4 border-b-0 md:border-4 h-screen border-magenta-400">
+    <div
+      class="md:mx-auto h-full overflow-y-auto pt-4 md:pt-16 pb-16 px-4 md:ps-8 md:pe-16 md:flex w-full md:w-fit gap-8 md:scrollbar scrollbar-thumb-magenta-800">
+      <div class="mx-auto max-w-lg md:max-w-96 md:w-fit md:text-right mb-8 flex-1">
+        <a class="text-magenta-600 hover:text-magenta-500 transition-colors mb-1 block" href="/">
+          ← back to index
+        </a>
+        <h1 class="font-bold text-magenta-400 text-2xl select-none mb-4 me-16 md:me-0 ms-0 md:ms-16 lowercase">
+          {title}
+        </h1>
+        <div class="border-2 border-magenta-400 w-full" />
+      </div>
+      <div
+        class="max-w-lg grow h-fit mx-auto prose prose-lg text-wrap hyphens-auto prose-stone prose-invert prose-headings:text-magenta-400 ">
+        <Content />
+      </div>
+    </div>
+  </main>
+</Layout>
