@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 
-const { title } = entry.data;
+const { title, subtitle } = entry.data;
 
 const { Content } = await entry.render();
 ---
@@ -33,10 +33,11 @@ const { Content } = await entry.render();
         <h1 class="font-bold text-magenta-400 text-2xl select-none mb-4 me-16 md:me-0 ms-0 md:ms-16 lowercase">
           {title}
         </h1>
-        <div class="border-2 border-magenta-400 w-full" />
+        <div class="border-2 border-magenta-400 w-full mb-4" />
+        <p class="lowercase text-magenta-500 italic">{subtitle}</p>
       </div>
       <div
-        class="max-w-lg grow h-fit mx-auto prose prose-lg text-wrap hyphens-auto prose-stone prose-invert prose-headings:text-magenta-400 ">
+        class="max-w-lg grow h-fit mx-auto prose md:prose-lg text-wrap hyphens-auto prose-stone prose-invert prose-headings:text-magenta-400 ">
         <Content />
       </div>
     </div>

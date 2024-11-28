@@ -157,25 +157,27 @@ export function drawLiveCells(
 export const doGameStep = produce((draft: GameOfLife) => {
   const cellsToKill: Array<Cell> = [];
   const cellsToAdd: Array<Cell> = [];
-  let activeDeadCells = makeCellSet();
+  let exploredCells = makeCellSet();
 
   const liveCells = draft.liveCells;
 
   for (const cell of iterate(liveCells)) {
     const [liveNeighborCount, deadNeighbors] = analyzeNeighbors(draft, cell);
 
-    activeDeadCells = union(activeDeadCells, deadNeighbors);
+    for (const cell of iterate(deadNeighbors)) {
+      if (hasCell(exploredCells, ...cell)) continue;
+
+      const [liveNeighborCount] = analyzeNeighbors(draft, cell);
+
+      if (liveNeighborCount === 3) {
+        cellsToAdd.push(cell);
+      }
+    }
+
+    exploredCells = union(exploredCells, deadNeighbors);
 
     if (liveNeighborCount < 2 || liveNeighborCount > 3) {
       cellsToKill.push(cell);
-    }
-  }
-
-  for (const cell of iterate(activeDeadCells)) {
-    const [liveNeighborCount] = analyzeNeighbors(draft, cell);
-
-    if (liveNeighborCount === 3) {
-      cellsToAdd.push(cell);
     }
   }
 

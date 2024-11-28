@@ -130,7 +130,7 @@ export const fillRegionWithRandomPattern = produce(
     for (let x = x1; x < x2; x++) {
       for (let y = y1; y < y2; y++) {
         // Check if we should attempt to place a glider at this coordinate
-        if (Math.random() < 0.001) {
+        if (Math.random() < 0.0005) {
           // Select a random pattern and rotate it randomly
 
           const pattern = rotatePatternRandomly(selectRandomPattern());
