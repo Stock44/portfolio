@@ -4,32 +4,32 @@ import ConwayCanvas from "../components/ConwayCanvas.astro";
 import NavigationItem from "../components/NavigationItem.astro";
 import { getCollection } from "astro:content";
 
+import * as indexContent from "../index.md";
+
+const { Content, frontmatter } = indexContent;
+
+const { title } = frontmatter;
+
 const posts = await getCollection("posts");
 ---
 
 
 <Layout title="hiram's page">
-  <main class="w-full h-screen mx-auto border-t-4 md:border-4 border-magenta-400 py-16 px-4 z-10 relative md:text-lg">
+  <main class="w-full h-screen mx-auto border-t-4 md:border-4 border-magenta-400 py-16 px-4 z-10 relative md:text-xl">
     <ConwayCanvas />
-    <header class="mx-auto w-full mb-5 px-2 max-w-lg">
-      <h1 class="font-bold text-magenta-400 text-3xl select-none mb-0.5">
-        hiram.page
+    <header
+      class="mx-auto w-full mb-5 px-2 max-w-lg prose lowercase md:prose-xl text-wrap hyphens-auto prose-stone prose-invert prose-headings:text-magenta-400">
+      <h1>
+        {title}
       </h1>
-      <p class="mb-3 italic text-sm text-magenta-200">
-        i am hiram muñoz, and this is my page
-      </p>
-      <p>
-        the following is a collection of
-        things i have written, about stuff i've learned about or done that i found
-        especially interesting.
-      </p>
+      <Content />
     </header>
     <article class="mx-auto w-full max-w-lg">
-      <h1 class="font-bold text-xl text-magenta-400 select-none px-2 pb-0.5">
+      <h1 class="font-bold text-3xl text-magenta-400 select-none px-2 pb-3">
         navigation
       </h1>
 
-      <nav class="">
+      <nav>
         {[...posts.entries()].map(([index, post]) => (
           <NavigationItem number={index} slug={post.slug} pageName={post.data.title} />
         ))}

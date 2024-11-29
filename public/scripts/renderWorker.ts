@@ -6,7 +6,7 @@ import {
   toggleCells,
   updateSize,
 } from "../../src/lib/conwayGame.ts";
-import { type Cell } from "../../src/lib/cells.ts";
+import { type Cell, hasCell } from "../../src/lib/cells.ts";
 
 // global variables
 let canvas: OffscreenCanvas | null = null;
@@ -105,11 +105,11 @@ function render() {
 
   drawLiveCells(ctx, game, cellWidth, cellHeight, cellColor);
 
-  if (hoverPosition) {
+  if (hoverPosition && !hasCell(game.liveCells, ...hoverPosition)) {
     const [x, y] = hoverPosition;
     ctx.fillStyle = hoverColor;
-    ctx.shadowColor = hoverColor;
-    ctx.shadowBlur = 5;
+    ctx.shadowColor = cellColor;
+    ctx.shadowBlur = 20;
     ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight);
   }
 
