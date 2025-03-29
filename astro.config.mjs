@@ -1,13 +1,15 @@
 import { defineConfig } from "astro/config";
 import alpinejs from "@astrojs/alpinejs";
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 import rehypeShiftHeading from "rehype-shift-heading";
 
 import mdx from "@astrojs/mdx";
 
-// https://astro.build/config
 export default defineConfig({
-  integrations: [alpinejs(), tailwind(), mdx()],
+  integrations: [alpinejs(), mdx()],
+  vite: {
+    plugins: [tailwindcss()],
+  },
   markdown: {
     rehypePlugins: [[rehypeShiftHeading, { shift: 1 }]],
   },

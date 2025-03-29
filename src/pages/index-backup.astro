@@ -11,7 +11,7 @@ import ConwayCanvas from "../components/ConwayCanvas.astro";
       class="h-screen flex flex-col">
       <div
         class="bg-magenta-800 flex-none uppercase text-magenta-400 font-bold border-b-16 border-magenta-700">
-        <div class="mx-auto max-w-screen-2xl flex justify-between h-full" x-data="{openSidebar: false}">
+        <div class="mx-auto max-w-(--breakpoint-2xl) flex justify-between h-full" x-data="{openSidebar: false}">
           <div class="lg:hidden aspect-square p-4 flex justify-center items-center hover:bg-white/5 cursor-pointer"
                @click="openSidebar = !openSidebar">
             <svg xmlns="http://www.w3.org/2000/svg"
@@ -87,7 +87,7 @@ import ConwayCanvas from "../components/ConwayCanvas.astro";
 
       <div
         class="flex-none bg-magenta-800 h-fit 2xl:h-56 border-t-16 border-magenta-700 text-magenta-400 uppercase justify-between">
-        <div class="max-w-screen-2xl flex justify-between mx-auto h-full gap-8">
+        <div class="max-w-(--breakpoint-2xl) flex justify-between mx-auto h-full gap-8">
           <div class="flex flex-col justify-center select-none p-4">
             <h1
               class="text-[64px] sm:text-[72px] md:text-[80px] lg:text-[88px] xl:text-[96px] 2xl:text-[108px]  font-black leading-[1.2] mb-[-2%]">

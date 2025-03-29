@@ -11,7 +11,7 @@
       <div @click="paused = !paused"
            :title="paused ? 'Resume' : 'Pause'"
            class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
-        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_theme(colors.magenta.700)]">
+        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
           <g x-show="!paused" x-transition>
             <rect x="0" width="6" height="16" />
             <rect x="10" width="6" height="16" />
@@ -24,7 +24,7 @@
       <div @click="clear"
            title="Clear"
            class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
-        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_theme(colors.magenta.700)]">
+        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
           <rect x="0" y="5" width="16" height="6" class="rotate-45 origin-center" />
           <rect x="0" y="5" width="16" height="6" class="-rotate-45 origin-center" />
         </svg>
@@ -32,21 +32,21 @@
       <div @click="updateRate -= updateRate - 0.5 > 0 ? 0.5 : 0"
            title="Lower update rate"
            class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
-        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_theme(colors.magenta.700)]">
+        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
           <rect x="0" y="5" width="16" height="6" />
         </svg>
       </div>
       <div @click="updateRate += updateRate + 0.5 <= 10 ? 0.5 : 0"
            title="Increase update rate"
            class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
-        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_theme(colors.magenta.700)]">
+        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
           <rect x="0" y="5" width="16" height="6" />
           <rect x="5" y="0" width="6" height="16" />
         </svg>
       </div>
       <div class="m-2 h-4 text-magenta-700 select-none" title="Update rate">
         <p x-text="`${(updateRate).toPrecision(2)} HZ`"
-           class="text-[12px] font-black drop-shadow-[0_0_5px_theme(colors.magenta.700)]" />
+           class="text-[12px] font-black drop-shadow-[0_0_5px_var(--color-magenta-700)]" />
       </div>
     </div>
   </div>

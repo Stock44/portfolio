@@ -1,0 +1,41 @@
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/typography';
+@plugin 'tailwind-scrollbar';
+
+@theme {
+  --font-*: initial;
+  --font-sans: Cooper Hewitt, Sans;
+
+  --border-width-16: 16px;
+
+  --color-magenta-50: #fff7fa;
+  --color-magenta-100: #ffcddb;
+  --color-magenta-200: #ff91b5;
+  --color-magenta-300: #ef0b7a;
+  --color-magenta-400: #be1962;
+  --color-magenta-500: #921d4d;
+  --color-magenta-600: #611a34;
+  --color-magenta-700: #391520;
+  --color-magenta-800: #2a1219;
+  --color-magenta-900: #16090c;
+  --color-magenta-950: #110709;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
