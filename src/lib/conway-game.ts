@@ -1,16 +1,16 @@
-import { enableMapSet, produce } from "immer";
+import { enableMapSet, produce } from 'immer';
 import {
-  addCells,
-  Cell,
-  CellSet,
-  fillRegionWithRandomPattern,
-  hasCell,
-  iterate,
-  makeCellSet,
-  removeCells,
-  toggleCells as toggleCellSetCell,
-  union,
-} from "./cells.ts";
+	addCells,
+	Cell,
+	CellSet,
+	fillRegionWithRandomPattern,
+	hasCell,
+	iterate,
+	makeCellSet,
+	removeCells,
+	toggleCells as toggleCellSetCell,
+	append,
+} from './cells.ts';
 
 enableMapSet();
 
@@ -18,9 +18,9 @@ enableMapSet();
  * The GameOfLife interface represents a game of life simulation.
  */
 export interface GameOfLife {
-  rows: number;
-  columns: number;
-  liveCells: CellSet;
+	rows: number;
+	columns: number;
+	liveCells: CellSet;
 }
 
 /**
@@ -28,14 +28,14 @@ export interface GameOfLife {
  * @returns {GameOfLife} A new GameOfLife object with initial values.
  */
 export function makeGameOfLife(
-  rows: number = 0,
-  columns: number = 0,
+	rows: number = 0,
+	columns: number = 0,
 ): GameOfLife {
-  return {
-    rows: rows,
-    columns: columns,
-    liveCells: makeCellSet(),
-  };
+	return {
+		rows: rows,
+		columns: columns,
+		liveCells: makeCellSet(),
+	};
 }
 
 /**
@@ -47,31 +47,31 @@ export function makeGameOfLife(
  * @returns {GameOfLife} The new game of life instance with an updated state
  */
 export const updateSize = produce(
-  (draft: GameOfLife, rows: number, columns: number) => {
-    const previousRows = draft.rows;
-    const previousCols = draft.columns;
+	(draft: GameOfLife, rows: number, columns: number) => {
+		const previousRows = draft.rows;
+		const previousCols = draft.columns;
 
-    draft.rows = rows;
-    draft.columns = columns;
+		draft.rows = rows;
+		draft.columns = columns;
 
-    if (previousRows < rows) {
-      console.log("adding rows");
-      draft.liveCells = fillRegionWithRandomPattern(
-        draft.liveCells,
-        [previousRows, 0],
-        [rows - 1, columns],
-      );
-    }
+		if (previousRows < rows) {
+			console.log('adding rows');
+			fillRegionWithRandomPattern(
+				draft.liveCells,
+				[previousRows, 0],
+				[rows - 1, columns],
+			);
+		}
 
-    if (previousCols < columns) {
-      console.log("adding cols");
-      draft.liveCells = fillRegionWithRandomPattern(
-        draft.liveCells,
-        [0, previousCols],
-        [rows, columns - 1],
-      );
-    }
-  },
+		if (previousCols < columns) {
+			console.log('adding cols');
+			fillRegionWithRandomPattern(
+				draft.liveCells,
+				[0, previousCols],
+				[rows, columns - 1],
+			);
+		}
+	},
 );
 
 /**
@@ -82,7 +82,7 @@ export const updateSize = produce(
  * @returns {GameOfLife} The new game of life instance with an updated state
  */
 export const toggleCells = produce((draft: GameOfLife, ...cells: Cell[]) => {
-  draft.liveCells = toggleCellSetCell(draft.liveCells, ...cells);
+	toggleCellSetCell(draft.liveCells, cells);
 });
 
 /**
@@ -94,92 +94,100 @@ export const toggleCells = produce((draft: GameOfLife, ...cells: Cell[]) => {
  * @return {Array<number, CellSet>} - An array containing the number of live neighbors and the empty neighbors.
  */
 export function analyzeNeighbors(
-  game: Readonly<GameOfLife>,
-  cell: Cell,
+	game: Readonly<GameOfLife>,
+	cell: Cell,
 ): [number, CellSet] {
-  let liveNeighbors = 0;
-  let emptyNeighbors = makeCellSet();
+	let liveNeighbors = 0;
+	const emptyNeighbors = makeCellSet();
 
-  const [x, y] = cell;
+	const [x, y] = cell;
 
-  const top = x === 0 ? game.rows - 1 : x - 1;
-  const bottom = x === game.rows - 1 ? 0 : x + 1;
-  const left = y === 0 ? game.columns - 1 : y - 1;
-  const right = y === game.columns - 1 ? 0 : y + 1;
+	const top = x === 0 ? game.rows - 1 : x - 1;
+	const bottom = x === game.rows - 1 ? 0 : x + 1;
+	const left = y === 0 ? game.columns - 1 : y - 1;
+	const right = y === game.columns - 1 ? 0 : y + 1;
 
-  const cellsToCheck: Array<[number, number[]]> = [
-    [top, [left, y, right]],
-    [x, [left, right]],
-    [bottom, [left, y, right]],
-  ];
+	const cellsToCheck: Array<[number, number[]]> = [
+		[top, [left, y, right]],
+		[x, [left, right]],
+		[bottom, [left, y, right]],
+	];
 
-  for (const [cellX, cells] of cellsToCheck) {
-    const row = game.liveCells.get(cellX);
+	for (const [cellX, cells] of cellsToCheck) {
+		const row = game.liveCells.get(cellX);
 
-    if (!row) {
-      emptyNeighbors = addCells(
-        emptyNeighbors,
-        ...cells.map((cellY) => [cellX, cellY] satisfies Cell),
-      );
-      continue;
-    }
+		if (!row) {
+			addCells(
+				emptyNeighbors,
+				cells.map(cellY => [cellX, cellY] satisfies Cell),
+			);
+			continue;
+		}
 
-    for (const cellY of cells) {
-      if (hasCell(game.liveCells, cellX, cellY)) {
-        liveNeighbors++;
-      } else {
-        emptyNeighbors = addCells(emptyNeighbors, [cellX, cellY]);
-      }
-    }
-  }
+		for (const cellY of cells) {
+			if (hasCell(game.liveCells, cellX, cellY)) {
+				liveNeighbors++;
+			} else {
+				addCells(emptyNeighbors, [[cellX, cellY]]);
+			}
+		}
+	}
 
-  return [liveNeighbors, emptyNeighbors];
+	return [liveNeighbors, emptyNeighbors];
 }
 
 export function drawLiveCells(
-  context: OffscreenCanvasRenderingContext2D,
-  game: Readonly<GameOfLife>,
-  cellWidth: number,
-  cellHeight: number,
-  cellColor: string,
+	context: OffscreenCanvasRenderingContext2D,
+	game: Readonly<GameOfLife>,
+	cellWidth: number,
+	cellHeight: number,
+	cellColor: string,
 ) {
-  context.fillStyle = cellColor;
-  context.shadowColor = cellColor;
-  context.shadowBlur = 5;
+	context.fillStyle = cellColor;
+	context.shadowColor = cellColor;
+	context.shadowBlur = 5;
 
-  for (const [x, row] of game.liveCells.entries()) for (const y of row) context.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight)
-    
-  ;
+	for (const [x, row] of game.liveCells.entries())
+		for (const y of row)
+			context.fillRect(
+				x * cellWidth,
+				y * cellHeight,
+				cellWidth,
+				cellHeight,
+			);
 }
 
 export const doGameStep = produce((draft: GameOfLife) => {
-  const cellsToKill: Array<Cell> = [];
-  const cellsToAdd: Array<Cell> = [];
-  let exploredCells = makeCellSet();
+	const cellsToKill: Array<Cell> = [];
+	const cellsToAdd: Array<Cell> = [];
+	const exploredCells = makeCellSet();
 
-  const liveCells = draft.liveCells;
+	const liveCells = draft.liveCells;
 
-  for (const cell of iterate(liveCells)) {
-    const [liveNeighborCount, deadNeighbors] = analyzeNeighbors(draft, cell);
+	for (const cell of iterate(liveCells)) {
+		const [liveNeighborCount, deadNeighbors] = analyzeNeighbors(
+			draft,
+			cell,
+		);
 
-    for (const cell of iterate(deadNeighbors)) {
-      if (hasCell(exploredCells, ...cell)) continue;
+		for (const cell of iterate(deadNeighbors)) {
+			if (hasCell(exploredCells, ...cell)) continue;
 
-      const [liveNeighborCount] = analyzeNeighbors(draft, cell);
+			const [liveNeighborCount] = analyzeNeighbors(draft, cell);
 
-      if (liveNeighborCount === 3) {
-        cellsToAdd.push(cell);
-      }
-    }
+			if (liveNeighborCount === 3) {
+				cellsToAdd.push(cell);
+			}
+		}
 
-    exploredCells = union(exploredCells, deadNeighbors);
+		append(exploredCells, deadNeighbors);
 
-    if (liveNeighborCount < 2 || liveNeighborCount > 3) {
-      cellsToKill.push(cell);
-    }
-  }
+		if (liveNeighborCount < 2 || liveNeighborCount > 3) {
+			cellsToKill.push(cell);
+		}
+	}
 
-  draft.liveCells = addCells(draft.liveCells, ...cellsToAdd);
+	addCells(draft.liveCells, cellsToAdd);
 
-  draft.liveCells = removeCells(draft.liveCells, ...cellsToKill);
+	removeCells(draft.liveCells, cellsToKill);
 });
