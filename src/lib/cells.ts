@@ -18,14 +18,14 @@ export function makeCellSet(): CellSet {
  * @returns {CellSet} A new, updated CellSet
  */
 export const addCells = produce((draft: CellSet, ...cells: Cell[]) => {
-  cells.forEach(([x, y]) => {
+  for (const [x, y] of cells) {
     const row = draft.get(x);
     if (row) {
       row.add(y);
     } else {
       draft.set(x, new Set([y]));
     }
-  });
+  }
 });
 
 /**
@@ -53,7 +53,7 @@ export function hasCell(
  * @returns {CellSet} A new, updated set
  */
 export const removeCells = produce((draft: CellSet, ...cells: Cell[]) => {
-  cells.forEach(([x, y]) => {
+  for (const [x, y] of cells) {
     const row = draft.get(x);
 
     if (row) {
@@ -63,7 +63,7 @@ export const removeCells = produce((draft: CellSet, ...cells: Cell[]) => {
         draft.delete(x);
       }
     }
-  });
+  }
 });
 
 /**
@@ -75,7 +75,7 @@ export const removeCells = produce((draft: CellSet, ...cells: Cell[]) => {
  * @returns {CellSet} A new, updated set
  */
 export const toggleCells = produce((draft: CellSet, ...cells: Cell[]) => {
-  cells.forEach(([x, y]) => {
+  for (const [x, y] of cells) {
     const row = draft.get(x);
 
     if (row) {
@@ -87,22 +87,22 @@ export const toggleCells = produce((draft: CellSet, ...cells: Cell[]) => {
     } else {
       draft.set(x, new Set([y]));
     }
-  });
+  }
 });
 
 export function union(l: Readonly<CellSet>, r: Readonly<CellSet>): CellSet {
   const newSet: CellSet = new Map(l);
 
-  r.forEach((v, k) => {
+  for (const [k, v] of r.entries()) {
     const set = newSet.get(k);
     if (set) {
-      v.forEach((setValue) => {
+      for (const setValue of v) {
         set.add(setValue);
-      });
+      }
     } else {
       newSet.set(k, new Set(v));
     }
-  });
+  }
   return newSet;
 }
 
@@ -143,13 +143,13 @@ export const fillRegionWithRandomPattern = produce(
           if (!canPlaceGlider) continue;
 
           // Place the pattern
-          pattern.forEach(([dx, dy]) => {
+          for (const [dx, dy] of pattern) {
             const newX = x + dx;
             const newY = y + dy;
             const rowSet = cells.get(newX) ?? new Set();
             rowSet.add(newY);
             cells.set(newX, rowSet);
-          });
+          }
         }
       }
     }

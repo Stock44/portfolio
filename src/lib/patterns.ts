@@ -86,7 +86,7 @@ function mulMatrix(lhs: number[][], rhs: number[][]) {
     for (let colIndex = 0; colIndex < p; colIndex++) {
       resultRow.push(
         lhsRow.reduce(
-          (acc, v, zipIndex) => acc + v * rhs[zipIndex]![colIndex]!, // for lhs, zipIndex is the column number, for rhs it is the rows
+          (accumulator, v, zipIndex) => accumulator + v * rhs[zipIndex]![colIndex]!, // for lhs, zipIndex is the column number, for rhs it is the rows
           0,
         ),
       );

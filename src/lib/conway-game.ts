@@ -113,7 +113,7 @@ export function analyzeNeighbors(
     [bottom, [left, y, right]],
   ];
 
-  cellsToCheck.forEach(([cellX, cells]) => {
+  for (const [cellX, cells] of cellsToCheck) {
     const row = game.liveCells.get(cellX);
 
     if (!row) {
@@ -121,37 +121,35 @@ export function analyzeNeighbors(
         emptyNeighbors,
         ...cells.map((cellY) => [cellX, cellY] satisfies Cell),
       );
-      return;
+      continue;
     }
 
-    cells.forEach((cellY) => {
+    for (const cellY of cells) {
       if (hasCell(game.liveCells, cellX, cellY)) {
         liveNeighbors++;
       } else {
         emptyNeighbors = addCells(emptyNeighbors, [cellX, cellY]);
       }
-    });
-  });
+    }
+  }
 
   return [liveNeighbors, emptyNeighbors];
 }
 
 export function drawLiveCells(
-  ctx: OffscreenCanvasRenderingContext2D,
+  context: OffscreenCanvasRenderingContext2D,
   game: Readonly<GameOfLife>,
   cellWidth: number,
   cellHeight: number,
   cellColor: string,
 ) {
-  ctx.fillStyle = cellColor;
-  ctx.shadowColor = cellColor;
-  ctx.shadowBlur = 5;
+  context.fillStyle = cellColor;
+  context.shadowColor = cellColor;
+  context.shadowBlur = 5;
 
-  game.liveCells.forEach((row, x) =>
-    row.forEach((y) =>
-      ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight),
-    ),
-  );
+  for (const [x, row] of game.liveCells.entries()) for (const y of row) context.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight)
+    
+  ;
 }
 
 export const doGameStep = produce((draft: GameOfLife) => {

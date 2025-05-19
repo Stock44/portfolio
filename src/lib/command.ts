@@ -1,55 +1,55 @@
-import { type Cell } from "./cells.ts";
+import { type Cell } from './cells.ts';
 
 interface SetRenderTarget {
-  type: "setRenderTarget";
-  target: OffscreenCanvas;
+	type: 'setRenderTarget';
+	target: OffscreenCanvas;
 }
 
 interface SetHoverPosition {
-  type: "setHoverPosition";
-  position: Cell | null;
+	type: 'setHoverPosition';
+	position: Cell | undefined;
 }
 
 interface ChangeResolution {
-  type: "changeResolution";
-  height: number;
-  width: number;
+	type: 'changeResolution';
+	height: number;
+	width: number;
 }
 
 interface ChangeCellSize {
-  type: "changeCellSize";
-  height: number;
-  width: number;
+	type: 'changeCellSize';
+	height: number;
+	width: number;
 }
 
 interface ChangeUpdateRate {
-  type: "changeUpdateRate";
-  updateRate: number;
+	type: 'changeUpdateRate';
+	updateRate: number;
 }
 
 interface SetPaused {
-  type: "setPaused";
-  paused: boolean;
+	type: 'setPaused';
+	paused: boolean;
 }
 
 interface ToggleCell {
-  type: "toggleCell";
-  x: number;
-  y: number;
+	type: 'toggleCell';
+	x: number;
+	y: number;
 }
 
 interface Clear {
-  type: "clear";
+	type: 'clear';
 }
 
 type Command =
-  | ChangeResolution
-  | ChangeCellSize
-  | ChangeUpdateRate
-  | Clear
-  | ToggleCell
-  | SetPaused
-  | SetRenderTarget
-  | SetHoverPosition;
+	| ChangeResolution
+	| ChangeCellSize
+	| ChangeUpdateRate
+	| Clear
+	| ToggleCell
+	| SetPaused
+	| SetRenderTarget
+	| SetHoverPosition;
 
 export default Command;
