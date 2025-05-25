@@ -1,21 +1,26 @@
 ---
 import { getCollection } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
+import { compareByPublishDates } from '../../lib/compare-by-publish-dates';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('posts');
+	const entries = await getCollection('posts');
 
-	return posts.map(entry => ({
+	const sortedEntries = entries.toSorted(compareByPublishDates)
+
+	return sortedEntries.map((entry, index) => ({
 		params: {
 			slug: entry.slug,
 		},
 		props: {
 			entry,
+			previousEntry: index > 0 ? sortedEntries.at(index - 1) : undefined,
+			nextEntry: index < sortedEntries.length - 1 ? sortedEntries.at(index + 1) : undefined,
 		},
 	}));
 }
 
-const { entry } = Astro.props;
+const { entry , previousEntry, nextEntry} = Astro.props;
 
 const { title, subtitle } = entry.data;
 
@@ -37,9 +42,27 @@ const { Content } = await entry.render();
 				<div class="border-2 border-magenta-400 w-full mb-4" />
 				<p class="lowercase text-magenta-500 italic text-lg lg:text-xl">{subtitle}</p>
 			</div>
-			<div
-				class="max-w-xl grow h-fit mx-auto prose prose-lg prose-pre:bg-magenta-950! prose-pre:border prose-pre:border-magenta-800 prose-a:transition-colors prose-a:text-stone-300 prose-a:hover:bg-magenta-700 prose-a:text-wrap prose-a:font-normal prose-a:after:content-['_↗'] prose-a:after:text-sm prose-a:after:align-top prose-a:after:text-magenta-300  prose-a:no-underline text-wrap hyphens-auto prose-stone prose-invert prose-headings:text-magenta-400 ">
-				<Content />
+			<div>
+				<div
+					class="max-w-xl grow h-fit mx-auto prose prose-lg prose-pre:bg-magenta-950 prose-pre:border prose-pre:border-magenta-800 prose-a:transition-colors prose-a:text-stone-300 prose-a:hover:bg-magenta-700 prose-a:text-wrap prose-a:font-normal prose-a:after:content-['_↗'] prose-a:after:text-sm prose-a:after:align-top prose-a:after:text-magenta-300  prose-a:no-underline text-wrap hyphens-auto prose-stone prose-invert prose-headings:text-magenta-400 mb-8">
+					<Content />
+				</div>
+				<div class="grid grid-cols-2 text-magenta-400">
+					{
+						previousEntry && (
+							<a href={previousEntry.slug} class="hover:text-magenta-300 transition-colors">
+								← {previousEntry.data.title}
+							</a>
+						)
+					}
+					{
+						nextEntry && (
+							<a href={nextEntry.slug} class="col-start-2 text-right hover:text-magenta-300 transition-colors">
+								{nextEntry.data.title} →
+							</a>
+						)
+					}
+				</div>
 			</div>
 		</main>
 	</div>

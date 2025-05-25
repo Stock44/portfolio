@@ -5,12 +5,15 @@ import NavigationItem from '../components/NavigationItem.astro';
 import { getCollection } from 'astro:content';
 
 import * as indexContent from '../index.md';
+import { compareByPublishDates } from '../lib/compare-by-publish-dates';
 
 const { Content, frontmatter } = indexContent;
 
 const { title } = frontmatter;
 
-const posts = await getCollection('posts');
+const entries = await getCollection('posts');
+
+const sortedEntries = entries.toSorted(compareByPublishDates);
 ---
 
 
@@ -33,7 +36,7 @@ const posts = await getCollection('posts');
 			</h1>
 
 			<nav>
-				{[...posts.entries()].map(([index, post]) => (
+				{[...sortedEntries.toReversed().entries()].toReversed().map(([index, post]) => (
 					<NavigationItem number={index} slug={post.slug} pageName={post.data.title} />
 				))}
 			</nav>
