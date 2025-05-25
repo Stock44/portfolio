@@ -5,7 +5,6 @@ import NavigationItem from '../components/NavigationItem.astro';
 import { getCollection } from 'astro:content';
 
 import * as indexContent from '../index.md';
-import { compareByPublishDates } from '../lib/compare-by-publish-dates';
 
 const { Content, frontmatter } = indexContent;
 
@@ -13,7 +12,7 @@ const { title } = frontmatter;
 
 const entries = await getCollection('posts');
 
-const sortedEntries = entries.toSorted(compareByPublishDates);
+const sortedEntries = entries.toSorted((a, b) => b.data.id - a.data.id);
 ---
 
 
@@ -35,9 +34,12 @@ const sortedEntries = entries.toSorted(compareByPublishDates);
 				navigation
 			</h1>
 
-			<nav>
-				{[...sortedEntries.toReversed().entries()].toReversed().map(([index, post]) => (
-					<NavigationItem number={index} slug={post.slug} pageName={post.data.title} />
+			<nav class="divide-y divide-magenta-800">
+				{sortedEntries.map(( post) => (
+					// Implemented inside a div so the divide is rendered correctly
+					<div>
+						<NavigationItem number={post.data.id} slug={post.slug} pageName={post.data.title} />
+					</div>
 				))}
 			</nav>
 		</nav>

@@ -1,12 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
-import { compareByPublishDates } from '../../lib/compare-by-publish-dates';
 
 export async function getStaticPaths() {
 	const entries = await getCollection('posts');
 
-	const sortedEntries = entries.toSorted(compareByPublishDates)
+	const sortedEntries = entries.toSorted((a, b) => b.data.id - a.data.id);
 
 	return sortedEntries.map((entry, index) => ({
 		params: {
@@ -14,13 +13,14 @@ export async function getStaticPaths() {
 		},
 		props: {
 			entry,
-			previousEntry: index > 0 ? sortedEntries.at(index - 1) : undefined,
-			nextEntry: index < sortedEntries.length - 1 ? sortedEntries.at(index + 1) : undefined,
+			index: sortedEntries.length - index - 1,
+			nextEntry: index > 0 ? sortedEntries.at(index - 1) : undefined,
+			previousEntry: index < sortedEntries.length - 1 ? sortedEntries.at(index + 1) : undefined,
 		},
 	}));
 }
 
-const { entry , previousEntry, nextEntry} = Astro.props;
+const { entry, previousEntry, nextEntry, index } = Astro.props;
 
 const { title, subtitle } = entry.data;
 
@@ -28,13 +28,14 @@ const { Content } = await entry.render();
 ---
 
 <MainLayout title={title}>
-	<div class="border-t-4 border-b-0 lg:border-4 h-screen border-magenta-400 p-4 lg:p-8">
+	<div class="border-t-4 border-b-0 lg:border-4 min-h-screen border-magenta-400 p-4 lg:p-8">
 		<main
 			class="grid lg:grid-cols-[1fr_max-content_1fr] mx-auto w-fit gap-6 lg:gap-8">
 			<div class="max-w-none w-full lg:w-56 lg:max-w-56 lg:text-right flex-1">
 				<a class="text-magenta-600 hover:text-magenta-500 transition-colors mb-2 block lg:text-lg" href="/">
 					← back to index
 				</a>
+				<p class="text-lg lg:text-xl text-magenta-500 font-normal">#{index}</p>
 				<h1
 					class="font-bold text-magenta-400 text-2xl lg:text-3xl select-none mb-4 lowercase">
 					{title}
@@ -47,17 +48,19 @@ const { Content } = await entry.render();
 					class="max-w-xl grow h-fit mx-auto prose prose-lg prose-pre:bg-magenta-950 prose-pre:border prose-pre:border-magenta-800 prose-a:transition-colors prose-a:text-stone-300 prose-a:hover:bg-magenta-700 prose-a:text-wrap prose-a:font-normal prose-a:after:content-['_↗'] prose-a:after:text-sm prose-a:after:align-top prose-a:after:text-magenta-300  prose-a:no-underline text-wrap hyphens-auto prose-stone prose-invert prose-headings:text-magenta-400 mb-8">
 					<Content />
 				</div>
-				<div class="grid grid-cols-2 text-magenta-400">
+				<div class="border-2 border-magenta-400 w-full mb-4" />
+				<div class="grid grid-cols-2 text-magenta-400 mb-8">
 					{
 						previousEntry && (
-							<a href={previousEntry.slug} class="hover:text-magenta-300 transition-colors">
+							<a href={previousEntry.slug} class="hover:text-magenta-300 transition-colors lowercase">
 								← {previousEntry.data.title}
 							</a>
 						)
 					}
 					{
 						nextEntry && (
-							<a href={nextEntry.slug} class="col-start-2 text-right hover:text-magenta-300 transition-colors">
+							<a href={nextEntry.slug}
+							   class="col-start-2 text-right hover:text-magenta-300 transition-colors lowercase">
 								{nextEntry.data.title} →
 							</a>
 						)

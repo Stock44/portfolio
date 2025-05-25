@@ -9,14 +9,14 @@ interface Props {
 const { pageName, number, slug } = Astro.props;
 ---
 
-<a href={`/posts/${slug}`}
-   class={twMerge('flex gap-16 items-baseline text-lg group justify-between rounded-sm cursor-pointer ',
-	   'transition-colors hover:bg-magenta-800/50',
-	   'focus-visible:outline focus-visible:bg-magenta-800/50 p-2 outline-magenta-300 focus-visible:outline-solid')}>
-	<p class="lowercase text-stone-300">
-		{pageName}
-	</p>
-	<p class="text-magenta-600 group-hover:text-magenta-500 transition-colors">
-		# {number}
-	</p>
-</a>
+	<a href={`/posts/${slug}`}
+	   class={twMerge('flex gap-16 items-baseline text-lg group justify-between rounded-sm cursor-pointer ',
+		   'transition-colors hover:bg-magenta-800/50',
+		   'focus-visible:outline focus-visible:bg-magenta-800/50 p-2 outline-magenta-300 focus-visible:outline-solid')}>
+		<p class="lowercase text-stone-300">
+			{pageName}
+		</p>
+		<p class="text-magenta-600 group-hover:text-magenta-500 transition-colors">
+			#{number}
+		</p>
+	</a>
