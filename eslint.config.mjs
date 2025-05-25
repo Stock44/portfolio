@@ -14,6 +14,15 @@ export default defineConfig([
 	...eslintPluginAstro.configs['jsx-a11y-recommended'],
 	{
 		rules: {
+			'unicorn/filename-case': [
+				'error',
+				{
+					cases: {
+						kebabCase: true,
+					},
+					ignore: [String.raw`.+\.astro$`],
+				},
+			],
 			'unicorn/prevent-abbreviations': [
 				'error',
 				{
@@ -23,6 +32,12 @@ export default defineConfig([
 					},
 				},
 			],
+		},
+	},
+	{
+		files: ['**/*.astro'],
+		rules: {
+			'unicorn/filename-case': ['error', { cases: { pascalCase: true } }],
 		},
 	},
 ]);

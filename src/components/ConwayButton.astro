@@ -1,0 +1,11 @@
+---
+import { HTMLAttributes } from 'astro/types';
+import { twMerge } from 'tailwind-merge';
+
+type Props = HTMLAttributes<'button'>;
+
+const {class: className, ...rest} = Astro.props;
+
+---
+
+<button {...rest} class={twMerge('transition-colors p-2 fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600', className)}/>
