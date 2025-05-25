@@ -8,6 +8,6 @@ const {class: className, ...rest} = Astro.props;
 
 ---
 
-<button {...rest} class={twMerge('active:scale-90 transition-colors p-3 text-magenta-600 cursor-pointer hover:bg-magenta-950 hover:fill-magenta-600', className)}>
+<button {...rest} class={twMerge('active:scale-95 transition-colors p-3 text-magenta-600 cursor-pointer hover:bg-magenta-800/50', className)}>
 	<slot/>
 </button>

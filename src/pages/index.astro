@@ -1,39 +1,42 @@
 ---
-import MainLayout from "../layouts/MainLayout.astro";
-import ConwayCanvas from "../components/ConwayCanvas.astro";
-import NavigationItem from "../components/NavigationItem.astro";
-import { getCollection } from "astro:content";
+import MainLayout from '../layouts/MainLayout.astro';
+import ConwayCanvas from '../components/ConwayCanvas.astro';
+import NavigationItem from '../components/NavigationItem.astro';
+import { getCollection } from 'astro:content';
 
-import * as indexContent from "../index.md";
+import * as indexContent from '../index.md';
 
 const { Content, frontmatter } = indexContent;
 
 const { title } = frontmatter;
 
-const posts = await getCollection("posts");
+const posts = await getCollection('posts');
 ---
 
 
 <MainLayout title="hiram's page">
-  <main class="w-full h-screen mx-auto border-t-4 md:border-4 border-magenta-500 py-16 px-4 z-10 relative md:text-xl">
-    <ConwayCanvas class="absolute inset-0 -z-10" />
-    <header
-      class="mx-auto w-full mb-5 px-2 max-w-lg prose lowercase md:prose-lg text-wrap hyphens-auto prose-stone prose-invert prose-headings:text-magenta-400">
-      <h1>
-        {title}
-      </h1>
-      <Content />
-    </header>
-    <nav class="mx-auto w-full max-w-lg">
-      <h1 class="font-bold text-2xl text-magenta-400 select-none px-2 pb-3">
-        navigation
-      </h1>
+	<div class="w-full h-screen mx-auto border-t-4 md:border-4 border-magenta-400 py-16 px-4 z-10 relative md:text-xl">
+		<ConwayCanvas class="absolute inset-0 -z-10" />
+		<header
+			class="bg-magenta-400 rounded-sm max-w-lg mx-auto lowercase font-bold text-5xl select-none pt-32 pb-2 px-2 mb-4">
+			<h1 class="text-magenta-900">
+				{title}
+			</h1>
+		</header>
+		<main
+			class="mx-auto w-full mb-6 px-2 max-w-lg prose lowercase prose-lg md:prose-base text-wrap hyphens-auto prose-stone prose-invert ">
+			<Content />
+		</main>
+		<nav class="mx-auto w-full max-w-lg">
+			<h1 class="font-bold text-2xl text-magenta-400 select-none px-2 pb-3">
+				navigation
+			</h1>
 
-      <nav>
-        {[...posts.entries()].map(([index, post]) => (
-          <NavigationItem number={index} slug={post.slug} pageName={post.data.title} />
-        ))}
-      </nav>
-    </nav>
-  </main>
+			<nav>
+				{[...posts.entries()].map(([index, post]) => (
+					<NavigationItem number={index} slug={post.slug} pageName={post.data.title} />
+				))}
+			</nav>
+		</nav>
+	</div>
 </MainLayout>
