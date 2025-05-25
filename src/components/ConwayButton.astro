@@ -4,10 +4,11 @@ import { twMerge } from 'tailwind-merge';
 
 type Props = HTMLAttributes<'button'>;
 
-const {class: className, ...rest} = Astro.props;
-
+const { class: className, ...rest } = Astro.props;
 ---
 
-<button {...rest} class={twMerge('active:scale-95 transition-colors p-3 text-magenta-600 cursor-pointer hover:bg-magenta-800/50', className)}>
-	<slot/>
+<button {...rest}
+		class={twMerge("active:scale-95 transition-colors p-3 text-magenta-600 cursor-pointer",
+			"hover:bg-magenta-800/50 outline-magenta-300 focus-visible:outline focus-visible:bg-magenta-800/50", className)}>
+	<slot />
 </button>
