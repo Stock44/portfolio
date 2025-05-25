@@ -1,8 +1,8 @@
 ---
-import "../styles/global.css";
+import '../styles/global.css';
 
 interface Props {
-  title: string;
+	title: string;
 }
 
 const { title } = Astro.props;
@@ -11,129 +11,30 @@ const { title } = Astro.props;
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf8" />
-  <meta name="description" content="Astro description" />
-  <meta name="viewport" content="width=device-width" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <meta name="generator" content={Astro.generator} />
-  <title>{title}</title>
+	<meta charset="utf8" />
+	<meta name="description" content="Astro description" />
+	<meta name="viewport" content="width=device-width" />
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	<link rel="preload" href="/fonts/cooperhewitt-heavy.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-heavyitalic.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-bold.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-bolditalic.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-semibold.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-semibolditalic.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-medium.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-mediumitalic.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-book.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-bookitalic.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-light.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-lightitalic.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-thin.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/cooperhewitt-thinitalic.woff2" as="font" type="font/woff2" crossorigin />
+
+	<meta name="generator" content={Astro.generator} />
+	<title>{title}</title>
 </head>
 <body class="bg-magenta-900 text-stone-200 min-h-screen">
 <slot />
 </body>
 </html>
-
-<style>
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-heavy.woff2') format('woff2');
-        font-weight: 900;
-        font-style: normal;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-heavyitalic.woff2') format('woff2');
-        font-weight: 900;
-        font-style: italic;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-bold.woff2') format('woff2');
-        font-weight: 700;
-        font-style: normal;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-bolditalic.woff2') format('woff2');
-        font-weight: 700;
-        font-style: italic;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-semibold.woff2') format('woff2');
-        font-weight: 600;
-        font-style: normal;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-semibolditalic.woff2') format('woff2');
-        font-weight: 600;
-        font-style: italic;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-medium.woff2') format('woff2');
-        font-weight: 500;
-        font-style: normal;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-mediumitalic.woff2') format('woff2');
-        font-weight: 500;
-        font-style: italic;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-book.woff2') format('woff2');
-        font-weight: 400;
-        font-style: normal;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-bookitalic.woff2') format('woff2');
-        font-weight: 400;
-        font-style: italic;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-light.woff2') format('woff2');
-        font-weight: 300;
-        font-style: normal;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-lightitalic.woff2') format('woff2');
-        font-weight: 300;
-        font-style: normal;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-thin.woff2') format('woff2');
-        font-weight: 200;
-        font-style: normal;
-        font-display: swap;
-    }
-
-    @font-face {
-        font-family: 'Cooper Hewitt';
-        src: url('/fonts/cooperhewitt-thinitalic.woff2') format('woff2');
-        font-weight: 200;
-        font-style: italic;
-        font-display: swap;
-    }
-</style>
 
