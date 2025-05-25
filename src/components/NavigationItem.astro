@@ -10,12 +10,12 @@ const { pageName, number, slug } = Astro.props;
 
 <a href={`/posts/${slug}`}>
   <div
-    class="flex gap-16 items-baseline text-lg group justify-between transition-colors hover:bg-magenta-800 p-2 rounded-sm cursor-pointer">
+    class="flex gap-16 items-baseline text-lg group justify-between transition-colors hover:bg-magenta-800/50 p-2 rounded-sm cursor-pointer">
     <p class="lowercase text-stone-300">
       {pageName}
     </p>
-    <p class="text-magenta-700 group-hover:text-magenta-600 transition-colors">
-      #{number}
+    <p class="text-magenta-600 group-hover:text-magenta-500 transition-colors">
+      # {number}
     </p>
   </div>
 </a>

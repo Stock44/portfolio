@@ -37,7 +37,10 @@ export default defineConfig([
 	{
 		files: ['**/*.astro'],
 		rules: {
-			'unicorn/filename-case': ['error', { cases: { pascalCase: true } }],
+			'unicorn/filename-case': [
+				'error',
+				{ cases: { pascalCase: true, camelCase: true } },
+			],
 		},
 	},
 ]);

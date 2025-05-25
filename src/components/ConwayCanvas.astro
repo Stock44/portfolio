@@ -1,60 +1,56 @@
 ---
+import ConwayButton from './ConwayButton.astro';
 interface Props {
 	readonly class?: string;
 }
 
-const {class: className}  = Astro.props
+const { class: className } = Astro.props;
 ---
 <Fragment>
-  <script>
-    import "../lib/conway-canvas-state.ts";
-  </script>
+	<script>
+		import '../lib/conway-canvas-state.ts';
+	</script>
 
-  <div class={className} x-data="conwayCanvasState">
-    <canvas class="h-full w-full touch-none" x-bind="canvas" />
+	<div class={className} x-data="conwayCanvasState">
+		<canvas class="h-full w-full touch-none" x-bind="canvas" />
 
-    <!-- Control bar -->
-    <div class="absolute z-10 top-0 left-0 flex">
-      <button @click="paused = !paused"
-           :title="paused ? 'Resume' : 'Pause'"
-           class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
-        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
-          <g x-show="!paused" x-transition>
-            <rect x="0" width="6" height="16" />
-            <rect x="10" width="6" height="16" />
-          </g>
-          <path xmlns="http://www.w3.org/2000/svg" x-show="paused"
-                x-transition
-                d="M0,0L16,8L0,16L0,0Z" />
-        </svg>
-      </button>
-      <button @click="clear"
-           title="Clear"
-           class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
-        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
-          <rect x="0" y="5" width="16" height="6" class="rotate-45 origin-center" />
-          <rect x="0" y="5" width="16" height="6" class="-rotate-45 origin-center" />
-        </svg>
-      </button>
-      <button @click="updateRate -= updateRate - 0.5 > 0 ? 0.5 : 0"
-           title="Lower update rate"
-           class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
-        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
-          <rect x="0" y="5" width="16" height="6" />
-        </svg>
-      </button>
-      <button @click="updateRate += updateRate + 0.5 <= 10 ? 0.5 : 0"
-           title="Increase update rate"
-           class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
-        <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
-          <rect x="0" y="5" width="16" height="6" />
-          <rect x="5" y="0" width="6" height="16" />
-        </svg>
-      </button>
-      <div class="m-2 h-4 text-magenta-700 select-none" title="Update rate">
-        <p x-text="`${(updateRate).toPrecision(2)} HZ`"
-           class="text-[12px] font-black drop-shadow-[0_0_5px_var(--color-magenta-700)]" />
-      </div>
-    </div>
-  </div>
+		<!-- Control bar -->
+		<div class="absolute z-10 top-0 left-0 flex items-stretch">
+			<ConwayButton @click="paused = !paused"
+						  :aria-label="paused ? 'Resume' : 'Pause'">
+				<svg viewBox="0 0 16 16" class="size-4 fill-current drop-shadow-[0_0_5px_var(--color-magenta-700)]">
+					<g x-show="!paused" x-transition>
+						<rect x="0" width="6" height="16" />
+						<rect x="10" width="6" height="16" />
+					</g>
+					<path xmlns="http://www.w3.org/2000/svg" x-show="paused"
+						  x-transition
+						  d="M0,0L16,8L0,16L0,0Z" />
+				</svg>
+			</ConwayButton>
+			<ConwayButton @click="clear"
+						  aria-label="Clear">
+				<svg viewBox="0 0 16 16" class="size-4 fill-current drop-shadow-[0_0_5px_var(--color-magenta-700)]">
+					<rect x="0" y="5" width="16" height="6" class="rotate-45 origin-center" />
+					<rect x="0" y="5" width="16" height="6" class="-rotate-45 origin-center" />
+				</svg>
+			</ConwayButton>
+			<ConwayButton @click="updateRate -= updateRate - 0.5 > 0 ? 0.5 : 0"
+					aria-label="Lower update rate">
+				<svg viewBox="0 0 16 16" class="size-4 fill-current drop-shadow-[0_0_5px_var(--color-magenta-700)]">
+					<rect x="0" y="5" width="16" height="6" />
+				</svg>
+			</ConwayButton>
+			<ConwayButton @click="updateRate += updateRate + 0.5 <= 10 ? 0.5 : 0">
+				<svg viewBox="0 0 16 16" class="size-4 fill-current drop-shadow-[0_0_5px_var(--color-magenta-700)]">
+					<rect x="0" y="5" width="16" height="6" />
+					<rect x="5" y="0" width="6" height="16" />
+				</svg>
+			</ConwayButton>
+			<div class="flex items-center justify-center mx-1.5 text-magenta-600 select-none">
+				<p x-text="`${(updateRate).toPrecision(2)} HZ`"
+				   class="text-sm font-black drop-shadow-[0_0_5px_var(--color-magenta-700)]" />
+			</div>
+		</div>
+	</div>
 </Fragment>

@@ -15,7 +15,7 @@ const posts = await getCollection("posts");
 
 
 <MainLayout title="hiram's page">
-  <main class="w-full h-screen mx-auto border-t-4 md:border-4 border-magenta-400 py-16 px-4 z-10 relative md:text-xl">
+  <main class="w-full h-screen mx-auto border-t-4 md:border-4 border-magenta-500 py-16 px-4 z-10 relative md:text-xl">
     <ConwayCanvas class="absolute inset-0 -z-10" />
     <header
       class="mx-auto w-full mb-5 px-2 max-w-lg prose lowercase md:prose-lg text-wrap hyphens-auto prose-stone prose-invert prose-headings:text-magenta-400">
@@ -24,7 +24,7 @@ const posts = await getCollection("posts");
       </h1>
       <Content />
     </header>
-    <article class="mx-auto w-full max-w-lg">
+    <nav class="mx-auto w-full max-w-lg">
       <h1 class="font-bold text-2xl text-magenta-400 select-none px-2 pb-3">
         navigation
       </h1>
@@ -34,6 +34,6 @@ const posts = await getCollection("posts");
           <NavigationItem number={index} slug={post.slug} pageName={post.data.title} />
         ))}
       </nav>
-    </article>
+    </nav>
   </main>
 </MainLayout>
