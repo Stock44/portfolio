@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import Layout from "../../layouts/layout.astro";
+import MainLayout from "../../layouts/main-layout.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -22,7 +22,7 @@ const { title, subtitle } = entry.data;
 const { Content } = await entry.render();
 ---
 
-<Layout title={title}>
+<MainLayout title={title}>
   <main class="border-t-4 border-b-0 md:border-4 h-screen border-magenta-400">
     <div
       class="md:mx-auto h-full overflow-y-auto pt-4 md:pt-16 pb-16 px-4 md:ps-8 md:pe-16 md:flex w-full md:w-fit gap-8 md:scrollbar scrollbar-thumb-magenta-800">
@@ -43,4 +43,4 @@ const { Content } = await entry.render();
       </div>
     </div>
   </main>
-</Layout>
+</MainLayout>

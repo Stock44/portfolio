@@ -1,14 +1,21 @@
+---
+interface Props {
+	readonly class?: string;
+}
+
+const {class: className}  = Astro.props
+---
 <Fragment>
   <script>
     import "../lib/conway-canvas-state.ts";
   </script>
 
-  <div class="absolute overflow-hidden top-1 left-1 bottom-1 right-1 -z-20" x-data="conwayCanvasState">
+  <div class={className} x-data="conwayCanvasState">
     <canvas class="h-full w-full touch-none" x-bind="canvas" />
 
     <!-- Control bar -->
     <div class="absolute z-10 top-0 left-0 flex">
-      <div @click="paused = !paused"
+      <button @click="paused = !paused"
            :title="paused ? 'Resume' : 'Pause'"
            class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
         <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
@@ -20,30 +27,30 @@
                 x-transition
                 d="M0,0L16,8L0,16L0,0Z" />
         </svg>
-      </div>
-      <div @click="clear"
+      </button>
+      <button @click="clear"
            title="Clear"
            class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
         <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
           <rect x="0" y="5" width="16" height="6" class="rotate-45 origin-center" />
           <rect x="0" y="5" width="16" height="6" class="-rotate-45 origin-center" />
         </svg>
-      </div>
-      <div @click="updateRate -= updateRate - 0.5 > 0 ? 0.5 : 0"
+      </button>
+      <button @click="updateRate -= updateRate - 0.5 > 0 ? 0.5 : 0"
            title="Lower update rate"
            class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
         <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
           <rect x="0" y="5" width="16" height="6" />
         </svg>
-      </div>
-      <div @click="updateRate += updateRate + 0.5 <= 10 ? 0.5 : 0"
+      </button>
+      <button @click="updateRate += updateRate + 0.5 <= 10 ? 0.5 : 0"
            title="Increase update rate"
            class="transition-colors p-2  fill-magenta-700 hover:bg-white/5 hover:fill-magenta-600">
         <svg viewBox="0 0 16 16" class="w-4 h-4 drop-shadow-[0_0_5px_var(--color-magenta-700)]">
           <rect x="0" y="5" width="16" height="6" />
           <rect x="5" y="0" width="6" height="16" />
         </svg>
-      </div>
+      </button>
       <div class="m-2 h-4 text-magenta-700 select-none" title="Update rate">
         <p x-text="`${(updateRate).toPrecision(2)} HZ`"
            class="text-[12px] font-black drop-shadow-[0_0_5px_var(--color-magenta-700)]" />

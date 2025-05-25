@@ -3,8 +3,6 @@ import Alpine from 'alpinejs';
 
 document.addEventListener('alpine:init', () => {
 	Alpine.data('conwayCanvasState', () => ({
-		mouseCoords: undefined as [number, number] | undefined,
-
 		mouseDown: false,
 
 		previousCell: undefined as [number, number] | undefined,
@@ -160,6 +158,7 @@ document.addEventListener('alpine:init', () => {
 		},
 
 		onMouseLeave() {
+			this.mouseDown = false;
 			this.renderWorker.postMessage({
 				type: 'setHoverPosition',
 				position: undefined,

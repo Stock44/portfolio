@@ -1,5 +1,5 @@
 ---
-import Layout from "../layouts/layout.astro";
+import MainLayout from "../layouts/main-layout.astro";
 import ConwayCanvas from "../components/conway-canvas.astro";
 import NavigationItem from "../components/navigation-item.astro";
 import { getCollection } from "astro:content";
@@ -14,9 +14,9 @@ const posts = await getCollection("posts");
 ---
 
 
-<Layout title="hiram's page">
+<MainLayout title="hiram's page">
   <main class="w-full h-screen mx-auto border-t-4 md:border-4 border-magenta-400 py-16 px-4 z-10 relative md:text-xl">
-    <ConwayCanvas />
+    <ConwayCanvas class="absolute inset-0 -z-10" />
     <header
       class="mx-auto w-full mb-5 px-2 max-w-lg prose lowercase md:prose-lg text-wrap hyphens-auto prose-stone prose-invert prose-headings:text-magenta-400">
       <h1>
@@ -36,4 +36,4 @@ const posts = await getCollection("posts");
       </nav>
     </article>
   </main>
-</Layout>
+</MainLayout>
